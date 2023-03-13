@@ -14,12 +14,6 @@
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-  },
-  {
     path: '/admin',
     name: 'admin',
     icon: 'crown',
@@ -43,10 +37,18 @@
     component: './TableList',
   },
   {
+    path: '/welcome',
+    name: 'welcome',
+    icon: 'smile',
+    component: './Welcome',
+    layout: false
+  },
+  {
     path: '/',
     redirect: '/welcome',
   },
   {
     component: './404',
+    layout: false,
   },
 ];
