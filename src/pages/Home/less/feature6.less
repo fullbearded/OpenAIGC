@@ -1,0 +1,119 @@
+@feature6: feature6;
+
+.@{feature6} {
+  &-wrapper {
+    min-height: 200px;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #f9f8f8;
+
+    &.home-page-wrapper {
+      .home-page {
+        padding: 0 24px;
+      }
+    }
+  }
+
+  &-title {
+    display: inline-block;
+
+    &-wrapper {
+      margin-bottom: 48px;
+      text-align: center;
+    }
+
+    &-text {
+      display: inline-block;
+      margin: 0 72px;
+      color: @text-color;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.45s @ease-in-out;
+
+      &.active {
+        color: @primary-color;
+      }
+    }
+
+    &-bar {
+      display: block;
+      width: 20%;
+      height: 6px;
+      margin: auto;
+      background: @primary-color;
+
+      &-wrapper {
+        position: relative;
+        margin-top: 8px;
+        transition: left 0.45s @ease-in-out;
+      }
+    }
+  }
+
+  &-number,
+  &-text {
+    text-align: center;
+  }
+
+  &-number {
+    color: @primary-color;
+    font-weight: 600;
+    font-size: 48px;
+
+    &-wrapper {
+      text-align: center;
+    }
+  }
+
+  &-text {
+    font-size: 20px;
+  }
+
+  &-unit {
+    color: @primary-color;
+    font-size: 16px;
+  }
+
+  .ant-carousel {
+    .slick-dots-bottom {
+      bottom: -24px;
+    }
+
+    .slick-dots li {
+      button {
+        background: fade(@primary-color, 30);
+      }
+
+      &.slick-active button {
+        background: @primary-color;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .@{feature6}-wrapper {
+    min-height: 580px;
+    padding-bottom: 0;
+
+    &.home-page-wrapper {
+      .home-page {
+        padding: 56px 24px 64px;
+      }
+    }
+  }
+
+  .@{feature6}-title {
+    &-text {
+      margin: 0 14px;
+    }
+
+    &-bar {
+      width: 40%;
+    }
+  }
+
+  .@{feature6}-number-wrapper {
+    margin-bottom: 16px;
+  }
+}

@@ -1,0 +1,45 @@
+@homepage: home-page;
+.@{homepage}-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  .@{homepage} {
+    position: relative;
+    max-width: 1200px;
+    height: 100%;
+    margin: auto;
+    will-change: transform;
+  }
+  .title-wrapper > h1,
+  > h1 {
+    margin-bottom: 16px;
+    color: @text-color;
+    font-size: 32px;
+  }
+  .title-wrapper {
+    margin: 0 auto 64px;
+    text-align: center;
+  }
+}
+
+.@{homepage} {
+  padding: 128px 24px;
+}
+
+@media screen and (max-width: 767px) {
+  .@{homepage}-wrapper {
+    .@{homepage} {
+      padding: 56px 24px;
+      > h1 {
+        margin: 0 auto 32px;
+        font-size: 24px;
+        &.title-h1 {
+          margin-bottom: 8px;
+        }
+      }
+      > p {
+        margin-bottom: 32px;
+      }
+    }
+  }
+}

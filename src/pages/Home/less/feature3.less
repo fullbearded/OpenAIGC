@@ -1,0 +1,60 @@
+@content3: content3;
+.@{content3}-wrapper {
+  min-height: 500px;
+  padding: 50px 128px 50px 128px;
+  background-color: #f9f8f8;
+  .@{content3} {
+    height: 100%;
+    overflow: hidden;
+
+    & .title-wrapper {
+      margin: 0 auto 50px;
+    }
+
+    & .title-content {
+      text-align: center;
+    }
+    &-block-wrapper {
+      position: relative;
+      .@{content3}-block {
+        display: inline-block;
+        padding: 30px 24px;
+        vertical-align: top;
+        .@{content3}-icon {
+          display: inline-block;
+          width: 15%;
+          vertical-align: top;
+        }
+        .@{content3}-text {
+          display: inline-block;
+          width: 85%;
+          padding-left: 8%;
+        }
+        &.clear-both {
+          clear: both;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .@{content3}-wrapper {
+    min-height: 1080px;
+    padding: 0 20px 0 20px;
+    .@{content3} {
+      &-block-wrapper {
+        height: auto;
+        margin: 20px auto;
+        .@{content3}-block {
+          .@{content3}-title {
+            font-size: 20px;
+          }
+          &.queue-anim-leaving {
+            position: relative !important;
+          }
+        }
+      }
+    }
+  }
+}

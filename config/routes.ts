@@ -41,11 +41,14 @@
     name: 'welcome',
     icon: 'smile',
     component: './Welcome',
-    layout: false
+    layout: false,
   },
   {
     path: '/',
-    redirect: '/welcome',
+    name: 'home',
+    icon: 'smile',
+    component: './Home',
+    layout: false,
   },
   {
     component: './404',

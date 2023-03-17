@@ -1,0 +1,103 @@
+.footer1-wrapper {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  color: @template-footer-text-color;
+  background: @template-bg-color;
+  .footer1 {
+    .home-page {
+      padding: 64px 24px 80px;
+    }
+  }
+  .block {
+    padding: 0 32px;
+    .logo {
+      max-width: 180px;
+    }
+    .slogan {
+      margin-top: -20px;
+      font-size: 15px;
+    }
+    > h2 {
+      margin-bottom: 24px;
+      color: @template-text-color;
+    }
+    a {
+      float: left;
+      clear: both;
+      margin-bottom: 12px;
+      color: @template-footer-text-color;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+  }
+  .copyright-wrapper {
+    width: 100%;
+    border-top: 1px solid fade(@line-color, 10);
+    .home-page {
+      padding: 0 24px;
+      overflow: hidden;
+    }
+    .copyright {
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+    }
+  }
+  .wechat {
+    img {
+      width: 150px;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .footer1 {
+    min-height: 550px;
+    &-wrapper {
+      .footer1 {
+        .home-page {
+          padding: 64px 24px 32px;
+        }
+      }
+    }
+    .logo {
+      margin: 0 auto 24px;
+    }
+    .block {
+      margin-bottom: 32px;
+      padding: 0;
+      text-align: center;
+    }
+    > ul {
+      width: 90%;
+      margin: 20px auto 0;
+      padding: 10px 0;
+      > li {
+        width: 100%;
+        h2 {
+          margin-bottom: 10px;
+        }
+        li {
+          display: inline-block;
+          margin-right: 10px;
+        }
+      }
+    }
+    .copyright {
+      &-wrapper {
+        .home-page {
+          padding: 0;
+          .copyright {
+            font-size: 12px;
+          }
+        }
+      }
+
+      span {
+        width: 90%;
+      }
+    }
+  }
+}
