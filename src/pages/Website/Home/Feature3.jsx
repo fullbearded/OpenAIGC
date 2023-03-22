@@ -65,7 +65,7 @@ class Content3 extends React.PureComponent {
     });
     return (
       <div {...props} {...dataSource.wrapper}>
-        <div {...dataSource.page}>
+        <div {...dataSource.page} className="home-page">
           <div {...dataSource.titleWrapper}>
             {dataSource.titleWrapper.children.map(getChildrenToRender)}
           </div>

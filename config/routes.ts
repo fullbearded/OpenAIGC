@@ -60,6 +60,14 @@
     layout: false,
   },
   {
+    path: '/generate',
+    name: 'generate',
+    icon: 'smile',
+    component: './Generate',
+    layout: false,
+  },
+
+  {
     path: '/*',
     name: '404',
     icon: 'smile',

@@ -1,10 +1,12 @@
 import React from 'react';
 import { enquireScreen } from 'enquire-js';
 import Nav3 from '@/pages/Website/Common/Nav3';
+import Footer1 from "@/pages/Website/Common/Footer1";
 import { Nav30DataSource, Footer10DataSource } from '../Common/data.source';
-import AppForm from './Form';
+import AppForm from './AppForm';
 
-import '../Home/less/antMotionStyle.less';
+import './index.less'
+
 
 let isMobile;
 enquireScreen((b) => {
@@ -38,11 +40,17 @@ export default class App extends React.Component {
     const children = [
       <Nav3 id="Nav3_0" key="Nav3_0" dataSource={Nav30DataSource} isMobile={this.state.isMobile} />,
       <AppForm />,
+      <Footer1
+        id="Footer1_0"
+        key="Footer1_0"
+        dataSource={Footer10DataSource}
+        isMobile={this.state.isMobile}
+      />,
     ];
 
     return (
       <div
-        className="templates-wrapper"
+        className="app-top-wrapper"
         ref={(d) => {
           this.dom = d;
         }}
