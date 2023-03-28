@@ -18,7 +18,7 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       isMobile,
-      show: !location.port, // 如果不是 dva 2.0 请删除
+      show: !location.port,
     };
   }
 
@@ -55,9 +55,7 @@ export default class App extends React.Component {
           this.dom = d;
         }}
       >
-        {/* 如果不是 dva 2.0 替换成 {children} start */}
         {this.state.show && children}
-        {/* 如果不是 dva 2.0 替换成 {children} end */}
       </div>
     );
   }
