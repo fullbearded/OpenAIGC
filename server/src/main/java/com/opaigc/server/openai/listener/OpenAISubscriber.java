@@ -3,8 +3,8 @@ package com.opaigc.server.openai.listener;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import com.alibaba.fastjson.JSON;
+import com.opaigc.server.openai.client.OpenAiClient;
 import com.opaigc.server.openai.domain.chat.ChatCompletionResponse;
-import com.opaigc.server.openai.domain.chat.Message;
 import com.opaigc.server.openai.domain.chat.MessageQuestion;
 import com.opaigc.server.openai.domain.chat.MessageResponse;
 import com.opaigc.server.openai.domain.chat.MessageType;
@@ -12,6 +12,7 @@ import com.opaigc.server.openai.domain.chat.MessageType;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
 /**
@@ -28,6 +29,9 @@ public class OpenAISubscriber implements Subscriber<String>, Disposable {
     private final StringBuilder sb = new StringBuilder();
     private final MessageQuestion questions;
 
+    /**
+     * 构造方法
+     **/
     public OpenAISubscriber(FluxSink<String> emitter, String sessionId, CompletedCallBack completedCallBack, MessageQuestion questions) {
         this.emitter = emitter;
         this.sessionId = sessionId;
@@ -41,6 +45,9 @@ public class OpenAISubscriber implements Subscriber<String>, Disposable {
         subscription.request(1);
     }
 
+    /**
+     * 数据处理
+     **/
     @Override
     public void onNext(String data) {
         log.info("OpenAI返回数据：{}", data);
@@ -60,6 +67,9 @@ public class OpenAISubscriber implements Subscriber<String>, Disposable {
 
     }
 
+    /**
+     * 异常处理
+     **/
     @Override
     public void onError(Throwable t) {
         log.error("OpenAI返回数据异常：{}", t.getMessage());
@@ -67,6 +77,9 @@ public class OpenAISubscriber implements Subscriber<String>, Disposable {
         completedCallBack.fail(sessionId);
     }
 
+    /**
+     * 完成处理
+     **/
     @Override
     public void onComplete() {
         log.info("OpenAI返回数据完成");

@@ -20,6 +20,11 @@ public interface CompletedCallBack {
      */
     void completed(MessageQuestion questions, String sessionId, String response);
 
+    /**
+     * 失败回掉
+     *
+     * @param sessionId
+     */
     void fail(String sessionId);
 
 }

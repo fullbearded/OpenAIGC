@@ -1,6 +1,5 @@
 include server/.gitignore
 include websites/.gitignore
-
 *.DS_Store
 *.idea
 

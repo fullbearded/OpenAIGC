@@ -17,15 +17,16 @@ spring:
       minimum-idle: 5
       idle-timeout: 300000
       max-lifetime: 1200000
-    url: jdbc:mysql://localhost:3306/opaigc?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC
-    username: root
-    password: 123456
+    url: ${MYSQL_HOST:jdbc:mysql://localhost:3306/opaigc?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:123456}
 
   data:
     redis:
+      host: ${REDIS_HOST:127.0.0.1}
       port: 6379
       database: 0
-      password:
+      password: ${REDIS_PASSWORD:}
       lettuce:
         pool:
           max-active: 1000
@@ -34,10 +35,10 @@ spring:
       ssl: false
 
 app-config:
-  env: "local"
+  env: ${ENV:local}
   proxy:
     host: 127.0.0.1
     port: 1087
-  apiKey: "your api key"
-  apiKeyList: ["your api key","your api key" ]
-  apiHost: https://api.openai.com
+  # 多个key用,分割
+  apiKeys: ${API_KEYS:your api key}
+  apiHost: ${API_HOST:https://api.openai.com}

@@ -10,13 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
-import com.opaigc.server.config.AppConfig;
 import com.opaigc.server.infrastructure.http.ApiResponse;
-import com.opaigc.server.openai.client.OpenAiClient;
-import com.opaigc.server.openai.domain.chat.Message;
-import com.opaigc.server.openai.domain.chat.MessageQuestion;
 import com.opaigc.server.openai.domain.chat.MessageType;
-import com.opaigc.server.openai.listener.OpenAISubscriber;
 import com.opaigc.server.openai.service.OpenAiService;
 
 import java.util.ArrayList;
@@ -46,11 +41,6 @@ public class OpenAiController {
 
     @Autowired
     private OpenAiService openAiService;
-
-    @Autowired
-    private AppConfig appConfig;
-
-    private OpenAiClient openAiClient;
 
     @Autowired
     private final MessageSource messageSource;

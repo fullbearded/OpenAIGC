@@ -3,8 +3,9 @@ package com.opaigc.server.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.collection.ListUtil;
 import java.util.List;
+import java.util.Random;
 import lombok.Data;
 
 /**
@@ -22,11 +23,9 @@ public class AppConfig {
 
     private Proxy proxy;
 
-    private String apiKey;
+    private String apiKeys;
 
     private String apiHost;
-
-    private List<String> apiKeyList;
 
     @Data
     public static class Proxy {
@@ -35,10 +34,12 @@ public class AppConfig {
     }
 
     public String getApiToken() {
-        String key = apiKey;
-        if (apiKeyList != null && !apiKeyList.isEmpty()) {
-            key = RandomUtil.randomEle(apiKeyList);
+        List<String> keyList = ListUtil.toList(apiKeys.split(","));
+        if (keyList.size() == 1) {
+            return keyList.get(0);
         }
-        return key;
+        Random random = new Random();
+        int index = random.nextInt(keyList.size());
+        return keyList.get(index);
     }
 }
