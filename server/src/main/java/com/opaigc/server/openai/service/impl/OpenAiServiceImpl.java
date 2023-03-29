@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.opaigc.server.config.AppConfig;
 import com.opaigc.server.openai.client.OpenAiClient;
-import com.opaigc.server.openai.domain.chat.Message;
 import com.opaigc.server.openai.domain.chat.MessageQuestion;
 import com.opaigc.server.openai.domain.chat.MessageType;
 import com.opaigc.server.openai.listener.OpenAISubscriber;
@@ -35,7 +34,7 @@ public class OpenAiServiceImpl implements OpenAiService {
         return Flux.create(emitter -> {
             OpenAISubscriber subscriber = new OpenAISubscriber(emitter, sessionId, this, userMessage);
             Flux<String> openAiResponse =
-                    openAiClient.getChatResponse(appConfig.getApiKey(), sessionId, prompt, null, null, null);
+                    openAiClient.getChatResponse(appConfig.getApiToken(), sessionId, prompt, null, null, null);
             openAiResponse.subscribe(subscriber);
             emitter.onDispose(subscriber);
         });
