@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  chat:
+    image: fullbearded/openaigc:latest
+    restart: always
+    container_name: openaigc
+    networks:
+      openaigc_network:
+    expose:
+      - "80"
+    ports:
+      - 80:80
+    environment:
+      MYSQL_HOST: jdbc:mysql://localhost:3306/opaigc?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: 123456
+      REDIS_HOST: 127.0.0.1
+      REDIS_PASSWORD:
+      ENV: prod
+      API_KEYS:
+      API_HOST: https://api.openai.com
+networks:
+  openaigc_network:

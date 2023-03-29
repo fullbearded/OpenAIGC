@@ -4,3 +4,5 @@ include websites/.gitignore
 *.idea
 
 *.iml
+
+docker-compose/docker-compose-prod.yml
