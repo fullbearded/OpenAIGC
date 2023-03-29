@@ -16,7 +16,7 @@ COPY websites /app
 RUN yarn build
 
 # build backend
-FROM openjdk:17-jdk-slim as backend
+FROM maven:3.8.3-openjdk-17 as backend
 
 WORKDIR /app
 
