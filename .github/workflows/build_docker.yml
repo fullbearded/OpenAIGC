@@ -28,10 +28,11 @@ jobs:
           docker push ${{ secrets.DOCKER_REPOSITORY }}:latest
         id: push_image
       - name: Deploy project
-        uses: appleboy/ssh-action@v0.2.1
+        uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USERNAME }}
+          key: ${{ secrets.REMOTE_KEY }}
           port: ${{ secrets.REMOTE_PORT }}
           script: |
             cd /root/OpenAIGC
