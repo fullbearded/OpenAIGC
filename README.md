@@ -12,7 +12,7 @@ OpenAIGC provides a language generation model based on GPT-4. Users can generate
 
 ## 计划的功能
 
-- [ ] OpenAIGC 官网上线
+- ✅ OpenAIGC 官网上线
 - [ ] 用户可以直接运行每一个 App
   - [ ] 上线首页 6 组常用 App，包括 “周报生成器”、“周公解梦”等，使匿名用户也能通过工具找到兴趣点
 - [ ] 用户可以注册并免费试用，每个用户可以创建任意数量公共的 APP
