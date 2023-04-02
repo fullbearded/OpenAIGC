@@ -35,7 +35,7 @@ jobs:
           key: ${{ secrets.REMOTE_KEY }}
           port: ${{ secrets.REMOTE_PORT }}
           script: |
-            cd /root/OpenAIGC
+            cd ${{ secrets.REMOTE_DEPLOY_PATH }}
             docker-compose up -d
           
           
