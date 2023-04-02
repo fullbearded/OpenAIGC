@@ -74,4 +74,5 @@ export default defineConfig({
   mfsu: {},
   webpack5: {},
   exportStatic: {},
+  publicPath: "https://openaigcstatic.58share.com"
 });
