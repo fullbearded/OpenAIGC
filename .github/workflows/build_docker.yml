@@ -36,6 +36,9 @@ jobs:
           port: ${{ secrets.REMOTE_PORT }}
           script: |
             cd ${{ secrets.REMOTE_DEPLOY_PATH }}
+            VERSION=${{ steps.get_version.outputs.version }}
+            REPO=${{ secrets.DOCKER_REPOSITORY }}
+            sed -i "s/image: ${REPO}:.*/image: ${REPO}:${VERSION}/g" docker-compose.yml
             docker-compose up -d
           
           
