@@ -1,11 +1,14 @@
 import React from 'react';
+import Logo3 from './assets/Logo3.png'
+import Logo1 from './assets/Logo1.png'
+import Wechat from './assets/wechat.jpg'
 
 export const Nav30DataSource = {
   wrapper: { className: 'header3 home-page-wrapper jzih1dpqqrg-editor_css' },
   page: { className: 'home-page' },
   logo: {
     className: 'header3-logo jzjgnya1gmn-editor_css',
-    children: 'https://d1cdbsaqdizhxd.cloudfront.net/logo/Logo1.png',
+    children: Logo1,
   },
   Menu: {
     className: 'header3-menu',
@@ -52,7 +55,7 @@ export const Footer10DataSource = {
         className: 'block',
         title: {
           className: 'logo jzl0qcpyjra-editor_css',
-          children: 'https://d1cdbsaqdizhxd.cloudfront.net/logo/Logo3.png',
+          children: Logo3,
         },
         childWrapper: {
           className: 'slogan',
@@ -70,7 +73,7 @@ export const Footer10DataSource = {
             {
               name: 'image~jzl0tcm4f1d',
               className: 'wechat',
-              children: 'https://d1cdbsaqdizhxd.cloudfront.net/material/IMG_0027.jpg',
+              children: Wechat,
             },
             {
               href: '#',

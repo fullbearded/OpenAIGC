@@ -43,8 +43,8 @@ class AppForm extends PureComponent {
               'Content-Type': 'application/json',
               Accept: 'text/event-stream',
               'Connection': 'keep-alive',
-              'Cache-Control': 'no-cache'
-              // Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ''}`,
+              'Cache-Control': 'no-cache',
+              Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImNvZGUiOiI3YzhhZWE5ZDA0ZTcwYjNmM2RmMjg4MTVmNmU4YTJhYiIsImlhdCI6MTY4MDg1Nzc4MSwiZXhwIjoxNjgwOTQ0MTgxfQ.njwMFk2BPq1ShUkz08P8i88DWiFPq2BV4A6J9cYsa6k',
             },
             method: 'POST',
             body: JSON.stringify(payload),

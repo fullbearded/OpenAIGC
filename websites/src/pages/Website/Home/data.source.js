@@ -1,4 +1,5 @@
 import React from 'react';
+import BannerFinal from './assets/banner-final.jpg';
 
 export const Banner50DataSource = {
   wrapper: { className: 'home-page-wrapper banner5' },
@@ -32,7 +33,7 @@ export const Banner50DataSource = {
   },
   image: {
     className: 'banner5-image',
-    children: 'https://d1cdbsaqdizhxd.cloudfront.net/banner/banner-final.png',
+    children: BannerFinal,
   },
 };
 export const Feature70DataSource = {
