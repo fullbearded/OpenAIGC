@@ -53,6 +53,13 @@
     layout: false,
   },
   {
+    path: '/apps',
+    name: 'app',
+    icon: 'smile',
+    component: './Website/Apps',
+    layout: false,
+  },
+  {
     path: '/app/:uid',
     name: 'app',
     icon: 'smile',

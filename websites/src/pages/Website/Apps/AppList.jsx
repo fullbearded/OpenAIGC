@@ -1,10 +1,11 @@
 import React from 'react';
-import { Row, Col, Button } from 'antd';
-import { PlayCircleOutlined, LikeOutlined } from '@ant-design/icons';
+import { Row, Col, Button, Input } from 'antd';
+import { PlayCircleOutlined, LikeOutlined,RightCircleOutlined } from '@ant-design/icons';
+const { Search } = Input;
 
 import { getChildrenToRender } from './utils';
 
-function Feature7(props) {
+function AppList(props) {
   const { dataSource, isMobile, ...tagProps } = props;
   const { blockWrapper, titleWrapper } = dataSource;
   const childrenToRender = blockWrapper.children.map((item, i) => (
@@ -42,15 +43,20 @@ function Feature7(props) {
     <div {...tagProps} {...dataSource.wrapper}>
       <div {...dataSource.page}>
         <div {...dataSource.titleWrapper}>{titleWrapper.children.map(getChildrenToRender)}</div>
+        <div className="search-wrapper">
+          <div>
+            <Search className="search" placeholder="input search text" enterButton size="large" allowClear/>
+          </div>
+        </div>
         <div>
           <Row {...blockWrapper}>{childrenToRender}</Row>
         </div>
         <div className="more-app">
-          <Button type="primary" shape="round" className="more-app-button" href="/apps">查看更多</Button>
+          <Button type="primary" shape="round" className="more-app-button">加载更多</Button>
         </div>
       </div>
     </div>
   );
 }
 
-export default Feature7;
+export default AppList;

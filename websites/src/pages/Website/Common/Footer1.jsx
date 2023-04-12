@@ -2,9 +2,23 @@ import React from 'react';
 import TweenOne from 'rc-tween-one';
 import OverPack from 'rc-scroll-anim/lib/ScrollOverPack';
 import QueueAnim from 'rc-queue-anim';
-import { Row, Col } from 'antd';
-import { getChildrenToRender } from '../Home/utils';
-import { isImg } from '../Home/utils';
+import {Row, Col, Button} from 'antd';
+import {isImg} from '../Home/utils';
+
+const getChildrenToRender = (item, i) => {
+  let tag = item.name.indexOf('title') === 0 ? 'h1' : 'div';
+  tag = item.href ? 'a' : tag;
+  let children =
+    typeof item.children === 'string' && item.children.match(/\.(png|jpg|gif|jpeg|webp)$/)
+      ? React.createElement('img', {src: item.children, alt: 'img'})
+      : item.children;
+  if (item.name.indexOf('button') === 0 && typeof item.children === 'object') {
+    children = React.createElement(Button, {
+      ...item.children,
+    });
+  }
+  return React.createElement(tag, {key: i.toString(), ...item}, children);
+};
 
 class Footer extends React.Component {
   static defaultProps = {
@@ -13,12 +27,12 @@ class Footer extends React.Component {
 
   getLiChildren = (data) =>
     data.map((item, i) => {
-      const { title, childWrapper, ...itemProps } = item;
+      const {title, childWrapper, ...itemProps} = item;
       return (
         <Col key={i.toString()} {...itemProps} title={null} content={null}>
           <h2 {...title}>
-            {typeof title.children === 'string' && title.children.match(isImg) ? (
-              <img src={title.children} width="100%" alt="img" />
+            {typeof title.children === 'string' && title.children.match(/\.(png|jpg|gif|jpeg|webp)$/) ? (
+              <img src={title.children} width="100%" alt="img"/>
             ) : (
               title.children
             )}
@@ -29,8 +43,8 @@ class Footer extends React.Component {
     });
 
   render() {
-    const { ...props } = this.props;
-    const { dataSource } = props;
+    const {...props} = this.props;
+    const {dataSource} = props;
     delete props.dataSource;
     delete props.isMobile;
     const childrenToRender = this.getLiChildren(dataSource.block.children);
@@ -41,7 +55,7 @@ class Footer extends React.Component {
             {childrenToRender}
           </QueueAnim>
           <TweenOne
-            animation={{ y: '+=30', opacity: 0, type: 'from' }}
+            animation={{y: '+=30', opacity: 0, type: 'from'}}
             key="copyright"
             {...dataSource.copyrightWrapper}
           >

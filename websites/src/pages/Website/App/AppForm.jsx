@@ -121,7 +121,7 @@ class AppForm extends PureComponent {
     const {loading, formData, artifacts, copyIsSuccess} = this.state;
     return (
       <div className="container-wrapper">
-        <Button type="link" icon={<AppstoreOutlined/>} className="back-link">返回应用列表</Button>
+        <Button type="link" icon={<AppstoreOutlined/>} className="back-link" href="/apps">返回应用列表</Button>
         <div className="form-container">
           <h1 className="title">1231</h1>
           <p className="desc">12312312。</p>

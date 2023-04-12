@@ -54,7 +54,7 @@ export const Footer10DataSource = {
         md: 8,
         className: 'block',
         title: {
-          className: 'logo jzl0qcpyjra-editor_css',
+          className: 'logo jzl0qcpyjra-editor_css __image',
           children: Logo3,
         },
         childWrapper: {
@@ -72,7 +72,7 @@ export const Footer10DataSource = {
           children: [
             {
               name: 'image~jzl0tcm4f1d',
-              className: 'wechat',
+              className: 'wechat __image',
               children: Wechat,
             },
             {
