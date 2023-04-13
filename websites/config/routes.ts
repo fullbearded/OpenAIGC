@@ -60,6 +60,13 @@
     layout: false,
   },
   {
+    path: '/apps/create',
+    name: 'app',
+    icon: 'smile',
+    component: './Website/AppCreate',
+    layout: false,
+  },
+  {
     path: '/app/:uid',
     name: 'app',
     icon: 'smile',

@@ -11,6 +11,8 @@ import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import MainLoading from '@/components/MainLoading';
 // import { PageLoading } from '@ant-design/pro-layout';
 
+
+
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 const homePath = '/';

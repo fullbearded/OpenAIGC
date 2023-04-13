@@ -26,7 +26,7 @@ export const Content110DataSource = {
   },
   button: {
     className: '',
-    children: {a: {className: 'button', href: '/apps/create', children: '创建应用'}},
+    children: {a: {className: 'button', href: '#', children: '创建应用'}},
   },
 };
 export const Feature70DataSource = {
