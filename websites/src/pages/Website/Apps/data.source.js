@@ -1,19 +1,38 @@
 import React from 'react';
 
-export const Feature70DataSource = {
-  wrapper: { className: 'home-page-wrapper feature7-wrapper' },
-  page: { className: 'home-page feature7' },
-  OverPack: { playScale: 1 },
+import TitleImage from './assets/styles.svg'
+
+export const Content110DataSource = {
+  OverPack: {
+    className: 'home-page-wrapper content11-wrapper',
+    playScale: 0.3,
+  },
   titleWrapper: {
-    className: 'feature7-title-wrapper',
+    className: 'title-wrapper',
     children: [
       {
-        name: 'title',
-        className: 'feature7-title-h1',
-        children: '立即使用海量的 ChatGPT 应用',
+        name: 'image',
+        children: TitleImage,
+        className: 'title-image',
+      },
+      {name: 'title', children: '丰富的特色应用', className: 'title-h1'},
+      {
+        name: 'content',
+        children:
+          '立即使用海量的 ChatGPT 应用，或在几秒钟内创建属于自己的应用。',
+        className: 'title-content',
       },
     ],
   },
+  button: {
+    className: '',
+    children: {a: {className: 'button', href: '#', children: '创建应用'}},
+  },
+};
+export const Feature70DataSource = {
+  wrapper: {className: 'home-page-wrapper feature7-wrapper'},
+  page: {className: 'home-page feature7'},
+  OverPack: {playScale: 1},
   blockWrapper: {
     className: 'feature7-block-wrapper',
     gutter: 24,

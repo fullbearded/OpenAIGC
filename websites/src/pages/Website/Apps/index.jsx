@@ -8,13 +8,14 @@ import Nav3 from '@/pages/Website/Common/Nav3';
 import Footer1 from '@/pages/Website/Common/Footer1';
 
 import {
+  Content110DataSource,
   Feature70DataSource,
 } from './data.source';
 
+import Banner from './BannerFragment'
 import AppList from './AppList';
 
 import './less/antMotionStyle.less';
-
 
 let isMobile;
 enquireScreen((b) => {
@@ -53,6 +54,12 @@ export default class Home extends React.Component {
   render() {
     const children = [
       <Nav3 id="Nav3_0" key="Nav3_0" dataSource={Nav30DataSource} isMobile={this.state.isMobile}/>,
+      <Banner
+        id="Content11_0"
+        key="Content11_0"
+        dataSource={Content110DataSource}
+        isMobile={this.state.isMobile}
+      />,
       <AppList
         id="Feature7_0"
         key="Feature7_0"

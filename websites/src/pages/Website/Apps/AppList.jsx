@@ -42,10 +42,9 @@ function AppList(props) {
   return (
     <div {...tagProps} {...dataSource.wrapper}>
       <div {...dataSource.page}>
-        <div {...dataSource.titleWrapper}>{titleWrapper.children.map(getChildrenToRender)}</div>
         <div className="search-wrapper">
           <div>
-            <Search className="search" placeholder="input search text" enterButton size="large" allowClear/>
+            <Search className="search" placeholder="搜索8183款应用" enterButton size="large" allowClear/>
           </div>
         </div>
         <div>
