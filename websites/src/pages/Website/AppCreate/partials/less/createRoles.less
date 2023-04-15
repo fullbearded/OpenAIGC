@@ -1,0 +1,51 @@
+.create-roles-from-wrapper {
+  padding-left: 15px;
+  .ant-pro-card-body {
+    padding-top: 0;
+  }
+  .ant-alert {
+    margin-bottom: 20px;
+  }
+  .item-wrapper {
+    position: relative;
+    .form-buttons {
+      z-index: 10;
+      position: absolute;
+      top: -15px;
+      right: 0;
+      margin-top: 8px;
+      .form-button {
+        margin-left: 8px;
+      }
+    }
+  }
+  .ant-form-vertical .ant-form-item-label, .ant-col-24.ant-form-item-label, .ant-col-xl-24.ant-form-item-label {
+    padding-bottom: 0;
+  }
+  .variables {
+    text-align: left;
+    margin-bottom: 5px;
+  }
+}
+
+@media (min-width: 400px) {
+  .create-roles-from-wrapper {
+    .item-wrapper {
+      .form-buttons {
+        top: -15px;
+        right: 0;
+      }
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .create-roles-from-wrapper {
+    .item-wrapper {
+      .form-buttons {
+        top: -15px;
+        right: 30px;
+      }
+    }
+  }
+}
