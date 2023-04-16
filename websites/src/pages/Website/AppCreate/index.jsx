@@ -10,6 +10,8 @@ import 'antd/dist/antd.css';
 import './less/antMotionStyle.less';
 
 import StepAppCreator from "@/pages/Website/AppCreate/StepAppCreator";
+import {AppstoreOutlined} from "@ant-design/icons";
+import {Button} from "antd";
 
 let isMobile;
 enquireScreen((b) => {
@@ -48,7 +50,6 @@ export default class Home extends React.Component {
   render() {
     const children = [
       <Nav3 id="Nav3_0" key="Nav3_0" dataSource={Nav30DataSource} isMobile={this.state.isMobile}/>,
-      // <AppCreator />,
       <StepAppCreator/>,
       <Footer1
         id="Footer1_0"

@@ -4,54 +4,28 @@ import {
   ProForm,
   StepsForm,
 } from '@ant-design/pro-components';
-import {Col, message, Row} from 'antd';
+import {Button, Col, message, Row} from 'antd';
 import {useRef, useState} from 'react';
+import {useHistory} from 'react-router-dom';
+
 // @ts-ignore
 import {v4 as uuidv4} from 'uuid';
 import FormDataContext from './FormDataContext';
 
+
 import CreateInfoPartial from "@/pages/Website/AppCreate/partials/CreateInfoPartial";
 import CreateFormPartial from "@/pages/Website/AppCreate/partials/CreateFormPartial";
 import CreateRolesPartial from "@/pages/Website/AppCreate/partials/CreateRolesPartial";
-
-interface Role {
-  id: string;
-  template: string;
-  type: string;
-}
-
-interface FormItem {
-  id: string;
-  name: string;
-  type: string;
-  props: FormItemProps;
-  label: string;
-}
-
-interface FormItemProps {
-  placeholder: string;
-  type: string;
-  default: string;
-}
-
-
-interface AppData {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-  forms: FormItem[];
-  roles: Role[];
-  chat: boolean;
-  author: string;
-}
+import {AppstoreOutlined} from "@ant-design/icons";
+import {checkFreeApp, createFreeApp} from "@/services/server/api";
 
 // 初始化 formData
-const initialFormData: AppData = {
+const initialFormData: API.CreateAppData = {
   id: uuidv4(),
   name: '回复老板',
   icon: '🔨',
   description: '用婉转的方式回复老板，拒绝PUA从我做起',
+  category: 'PUBLIC',
   forms: [
     {
       id: uuidv4(),
@@ -84,20 +58,32 @@ const initialFormData: AppData = {
 export default () => {
   const formRef = useRef<ProFormInstance>();
   const [formData, setFormData] = useState(initialFormData);
+  const history = useHistory();
+
+  const onFinish = async () => {
+    createFreeApp(formData)
+      .then((res) => {
+        if (res.code === "200") {
+          message.success('创建成功');
+          history.push('/apps');
+        } else {
+          message.error(res.message);
+        }
+      });
+  };
 
   return (
     <div className="home-page-wrapper">
       <Row justify="center" align="middle" style={{minHeight: '100vh'}}>
         <Col xs={24} sm={16} md={12} lg={10} xl={8}>
+          <Button type="link" icon={<AppstoreOutlined/>} className="back-link" href="/apps">返回应用列表</Button>,
           <ProCard className="app-creator-wrapper home-page">
             <FormDataContext.Provider value={[formData, setFormData]}>
               <StepsForm<{ name: string; }>
-                // stepsProps={{direction: 'vertical'}}
                 formRef={formRef}
                 onFinish={async () => {
-                  // await waitTime(1000);
                   console.log(formData);
-                  message.success('提交成功');
+                  await onFinish();
                 }}
                 formProps={{
                   validateMessages: {
@@ -114,9 +100,16 @@ export default () => {
                     description: '应用基本信息',
                   }}
                   onFinish={async () => {
-                    console.log(formRef.current?.getFieldsValue());
-                    // await waitTime(2000);
-                    return true;
+                    try {
+                      const body = {
+                        name: formData.name
+                      }
+                      const response = await checkFreeApp(body)
+                      return response.status === 200;
+                    } catch (error) {
+                      console.error('Error:', error);
+                      return false;
+                    }
                   }}
                 >
                   <CreateInfoPartial/>
@@ -130,7 +123,7 @@ export default () => {
                     description: '表单信息',
                   }}
                   onFinish={async () => {
-                    console.log(formRef.current?.getFieldsValue());
+                    // console.log(formRef.current?.getFieldsValue());
                     return true;
                   }}
                 >
@@ -149,7 +142,7 @@ export default () => {
                     description: 'AI角色信息',
                   }}
                   onFinish={async () => {
-                    console.log(formRef.current?.getFieldsValue());
+                    // console.log(formRef.current?.getFieldsValue());
                     return true;
                   }}
                 >

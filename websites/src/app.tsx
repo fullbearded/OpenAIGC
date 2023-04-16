@@ -1,18 +1,17 @@
 import Footer from '@/components/Footer';
 import RightContent from '@/components/RightContent';
-import { BookOutlined, LinkOutlined } from '@ant-design/icons';
-import type { Settings as LayoutSettings } from '@ant-design/pro-components';
-import { SettingDrawer } from '@ant-design/pro-components';
-import type { RunTimeLayoutConfig } from 'umi';
-import { history, Link } from 'umi';
+import {BookOutlined, LinkOutlined} from '@ant-design/icons';
+import type {Settings as LayoutSettings} from '@ant-design/pro-components';
+import {SettingDrawer} from '@ant-design/pro-components';
+import type {RunTimeLayoutConfig} from 'umi';
+import {history, Link} from 'umi';
+import { RequestConfig } from 'umi';
+import { ResponseError } from 'umi-request';
 import defaultSettings from '../config/defaultSettings';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
 
 import MainLoading from '@/components/MainLoading';
-// import { PageLoading } from '@ant-design/pro-layout';
-
-
-
+import {message, notification} from "antd";
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 const homePath = '/';
@@ -20,7 +19,53 @@ const adminPath = '/admin';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
-  loading: <MainLoading />,
+  loading: <MainLoading/>,
+};
+
+const errorHandler = async (error: ResponseError) => {
+  const {response} = error;
+  if (response && response.status) {
+    if (response.status === 422) {
+      if (response && response.body) {
+        try {
+          const errorData = await response.clone().json(); // 或者使用 .text()
+          const errorMessage = errorData.message || '业务异常';
+          message.error(errorMessage);
+        } catch (e) {
+          message.error('业务异常，请检查网络');
+        }
+      } else {
+        message.error('业务异常，请稍后再次');
+      }
+    }
+    if (response.status === 401) {
+      message.error('登录失效，请重新登录');
+      history.push(loginPath);
+    }
+    if (response.status === 403) {
+      message.error('没有权限，请联系管理员');
+    }
+    if (response.status === 404) {
+      message.error('请求资源不存在');
+    }
+    if (response.status === 500 || response.status === 502 || response.status === 503 || response.status === 504) {
+      notification.error({
+        description: '服务器异常，请稍后再试',
+        message: '服务器异常',
+      });
+    }
+  }
+  if (!response) {
+    notification.error({
+      description: '您的网络发生异常，无法连接服务器',
+      message: '网络异常',
+    });
+  }
+  throw error;
+};
+
+export const request: RequestConfig = {
+  errorHandler,
 };
 
 /**
@@ -41,7 +86,7 @@ export async function getInitialState(): Promise<{
     }
     return undefined;
   };
-  const { location } = history;
+  const {location} = history;
 
   console.log(location.pathname);
 
@@ -68,16 +113,16 @@ export async function getInitialState(): Promise<{
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
+export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
   return {
-    rightContentRender: () => <RightContent />,
+    rightContentRender: () => <RightContent/>,
     disableContentMargin: false,
     waterMarkProps: {
       content: initialState?.currentUser?.name,
     },
-    footerRender: () => <Footer />,
+    footerRender: () => <Footer/>,
     onPageChange: () => {
-      const { location } = history;
+      const {location} = history;
       // 如果没有登录，重定向到 login
       if (
         !initialState?.currentUser &&
@@ -89,15 +134,15 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     },
     links: isDev
       ? [
-          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-          <Link to="/~docs" key="docs">
-            <BookOutlined />
-            <span>业务组件文档</span>
-          </Link>,
-        ]
+        <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
+          <LinkOutlined/>
+          <span>OpenAPI 文档</span>
+        </Link>,
+        <Link to="/~docs" key="docs">
+          <BookOutlined/>
+          <span>业务组件文档</span>
+        </Link>,
+      ]
       : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面

@@ -29,6 +29,7 @@ export const Content110DataSource = {
     children: {a: {className: 'button', href: '/apps/create', children: '创建应用'}},
   },
 };
+
 export const Feature70DataSource = {
   wrapper: {className: 'home-page-wrapper feature7-wrapper'},
   page: {className: 'home-page feature7'},
