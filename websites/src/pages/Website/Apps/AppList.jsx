@@ -7,26 +7,41 @@ const {Search} = Input;
 import {pageFreeApp} from "@/services/server/api";
 
 function AppList(props) {
-  const perPage = 5;
+  const perPage = 20;
 
   const [appPageData, setAppPageData] = useState({page: 1, perPage: 20, content: [], totalPages: 1, total: 100});
-
   const [displayLoadMore, setDisplayLoadMore] = useState(true);
+  const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
     pageFreeApp({perPage: perPage}).then((res) => {
       setAppPageData(res.data);
+      if (res.data.page >= res.data.totalPages)  {
+        setDisplayLoadMore(false)
+      }
     });
   }, {});
 
   const loadMore = () => {
-    pageFreeApp({page: appPageData.page + 1, perPage: perPage}).then((res) => {
-      setAppPageData({...res.data, content: appPageData.content.concat(res.data.content)});
+    let param = {page: appPageData.page + 1, perPage: perPage, nameLike: searchValue}
+    pageFreeApp(param).then((res) => {
+      setAppPageData({...res.data, page: res.data.page, content: appPageData.content.concat(res.data.content)});
       if (res.data.page >= res.data.totalPages)  {
         setDisplayLoadMore(false)
       }
     });
   };
+
+  const handleSearch = (value) => {
+    setDisplayLoadMore(true);
+    setSearchValue(value);
+    pageFreeApp({page: 1, nameLike: value, perPage: perPage}).then((res) => {
+      setAppPageData(res.data);
+      if (res.data.page >= res.data.totalPages)  {
+        setDisplayLoadMore(false)
+      }
+    });
+  }
 
   const {dataSource, isMobile, ...tagProps} = props;
   const childrenToRender = appPageData.content.map((item, i) => (
@@ -69,7 +84,12 @@ function AppList(props) {
       <div className="home-page feature7">
         <div className="search-wrapper">
           <div>
-            <Search className="search" placeholder={`搜索${appPageData.total}款应用`} enterButton size="large" allowClear/>
+            <Search className="search"
+                    placeholder={`搜索${appPageData.total}款应用`}
+                    enterButton
+                    size="large"
+                    onSearch={handleSearch}
+                    allowClear/>
           </div>
         </div>
         <div>
