@@ -52,6 +52,7 @@
     "@umijs/route-utils": "^2.0.0",
     "antd": "^4.20.0",
     "classnames": "^2.3.0",
+    "emoji-picker-react": "^4.4.8",
     "enquire-js": "^0.2.1",
     "eventsource-parser": "^1.0.0",
     "lodash": "^4.17.0",

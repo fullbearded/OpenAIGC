@@ -3,7 +3,8 @@ import {
 } from '@ant-design/pro-components';
 
 import FormDataContext from '../FormDataContext';
-import {useContext} from "react";
+import {useContext, useState} from "react";
+import EmojiPicker from 'emoji-picker-react';
 
 const CreateInfoPartial: React.FC = () => {
   const [formData, setFormData] = useContext(FormDataContext);
@@ -11,20 +12,38 @@ const CreateInfoPartial: React.FC = () => {
     setFormData({...formData, [key]: value});
   };
 
+  const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
+
+  const handleEmojiPickerVisible = () => {
+    setEmojiPickerVisible(!emojiPickerVisible);
+  };
+
+  const onEmojiClick = (_: any, emojiObject: any) => {
+    setFormData({...formData, icon: emojiObject.emoji})
+    setEmojiPickerVisible(false);
+  };
+
   return (
     <div>
-      <ProFormText
-        name="icon"
-        label="应用图标"
-        width="sm"
-        tooltip="应用图标,请输入 emoji 或纯文本"
-        placeholder="应用图标,请输入 emoji 或纯文本"
-        fieldProps={{
-          onChange: (e) => handleFormChange('icon', e.target.value),
-          // value: formData.icon
-        }}
-        initialValue={formData.icon}
-      />
+      <div onClick={handleEmojiPickerVisible} style={{ position: 'relative' }}>
+        <ProFormText
+          name="icon"
+          label="应用图标"
+          width="sm"
+          tooltip="应用图标,请输入 emoji 或纯文本"
+          placeholder="应用图标,请输入 emoji 或纯文本"
+          fieldProps={{
+            readOnly: true, // 禁止手动输入
+            value: formData.icon,
+          }}
+          initialValue={formData.icon}
+        />
+        {emojiPickerVisible && (
+          <div style={{ position: 'absolute', zIndex: 1 }}>
+            <EmojiPicker onEmojiClick={onEmojiClick} />
+          </div>
+        )}
+      </div>
       <ProFormText
         name="name"
         label="应用名称"
