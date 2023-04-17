@@ -3,8 +3,9 @@ import {
 } from '@ant-design/pro-components';
 
 import FormDataContext from '../FormDataContext';
-import {useContext, useState} from "react";
-import EmojiPicker from 'emoji-picker-react';
+import React, {useContext, useEffect, useRef, useState} from "react";
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
 
 const CreateInfoPartial: React.FC = () => {
   const [formData, setFormData] = useContext(FormDataContext);
@@ -18,10 +19,24 @@ const CreateInfoPartial: React.FC = () => {
     setEmojiPickerVisible(!emojiPickerVisible);
   };
 
-  const onEmojiClick = (_: any, emojiObject: any) => {
-    setFormData({...formData, icon: emojiObject.emoji})
+  const onEmojiSelect = (emojiObject: any) => {
+    setFormData({...formData, icon: emojiObject.native})
     setEmojiPickerVisible(false);
   };
+
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setEmojiPickerVisible(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [pickerRef]);
 
   return (
     <div>
@@ -35,12 +50,13 @@ const CreateInfoPartial: React.FC = () => {
           fieldProps={{
             readOnly: true, // 禁止手动输入
             value: formData.icon,
+            onChange: (e) => handleFormChange('name', e.target.value),
           }}
           initialValue={formData.icon}
         />
         {emojiPickerVisible && (
-          <div style={{ position: 'absolute', zIndex: 1 }}>
-            <EmojiPicker onEmojiClick={onEmojiClick} />
+          <div ref={pickerRef} className="emoji-wrapper" onClick={(e) => e.stopPropagation()}>
+            <Picker data={data} onEmojiSelect={onEmojiSelect} locale="zh" autoFocus={true}/>
           </div>
         )}
       </div>

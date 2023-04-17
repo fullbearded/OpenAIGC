@@ -106,6 +106,7 @@ export default () => {
                       }
                       const response = await checkFreeApp(body)
                       return response.status === 200;
+                      console.log(formData)
                     } catch (error) {
                       console.error('Error:', error);
                       return false;
