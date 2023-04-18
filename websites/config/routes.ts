@@ -67,7 +67,7 @@
     layout: false,
   },
   {
-    path: '/app/:uid',
+    path: '/app/:code',
     name: 'app',
     icon: 'smile',
     component: './Website/App',

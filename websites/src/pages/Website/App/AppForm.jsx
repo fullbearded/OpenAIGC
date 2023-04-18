@@ -1,10 +1,12 @@
-import {Button, Form, Input, message, Spin, Typography} from 'antd';
+import {Button, Form, Input, message, notification, Spin, Typography} from 'antd';
 import {AppstoreOutlined, LoadingOutlined} from '@ant-design/icons';
 import React, {PureComponent} from 'react';
 import {fetchEventSource,} from "@microsoft/fetch-event-source";
+import { withRouter } from 'react-router-dom';
 import './app-form.less'
 
 import md from "@/components/markdown-it"
+import {listFreeApp} from "@/services/server/api";
 
 const {TextArea} = Input;
 
@@ -20,19 +22,36 @@ class AppForm extends PureComponent {
     this.state = {
       loading: false,
       artifacts: '',
-      formData: {prompt: ''},
+      formData: {
+        forms: [],
+        messages: []
+      },
       copyIsSuccess: false
     };
     this.messageApi = message;
+
+    const { code } = this.props.match.params;
+    listFreeApp({ code }).then(res => {
+      if(res.data && res.data.length > 0) {
+        this.setState({formData: res.data[0]});
+      } else {
+        notification.error({
+          message: '暂无可用应用',
+          description: '暂无可用应用',
+        });
+      }
+    });
   }
 
   handleSubmit = () => {
     const {formData} = this.state;
-    if (formData.prompt) {
+    if (formData.messages) {
       const payload = {
-        prompt: formData.prompt,
+        messages: formData.messages,
         user: 'user',
       };
+
+      debugger
 
       this.setState({loading: true, artifacts: ''});
 
@@ -105,6 +124,7 @@ class AppForm extends PureComponent {
       formData: values
     });
     this.handleSubmit()
+    return false;
   };
 
   onCopy = (event, value) => {
@@ -123,17 +143,20 @@ class AppForm extends PureComponent {
       <div className="container-wrapper">
         <Button type="link" icon={<AppstoreOutlined/>} className="back-link" href="/apps">返回应用列表</Button>
         <div className="form-container">
-          <h1 className="title">1231</h1>
-          <p className="desc">12312312。</p>
+          <h1 className="title">{formData.icon}{formData.name}</h1>
+          <p className="desc">{formData.description}</p>
 
           <Form onFinish={this.onFinish} className="app-form" initialValues={formData}>
-            <Form.Item name="prompt" rules={[{required: true, message: 'Please input your prompt'}]}>
-              <TextArea className="form-textarea" placeholder="Autosize height based on content lines"
-                        autoSize={{minRows: 6}}
-                        showCount
-                        maxLength={800}
-              />
-            </Form.Item>
+            {formData && formData.forms && formData.forms.map((item, index) => (
+              <Form.Item name="messages[]" rules={[{required: true, message: '请输入你的提示词'}]}>
+                <TextArea className="form-textarea" placeholder={item.props.placeholder}
+                          autoSize={{minRows: 6}}
+                          showCount
+                          maxLength={800}
+                          initialValues={item.props.placeholder}
+                />
+              </Form.Item>
+            ))}
             <Form.Item>
               <Button type="primary" htmlType="submit" className="form-button">
                 提交
@@ -163,4 +186,4 @@ class AppForm extends PureComponent {
   }
 }
 
-export default AppForm;
+export default withRouter(AppForm);

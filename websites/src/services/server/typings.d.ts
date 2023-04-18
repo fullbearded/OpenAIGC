@@ -54,4 +54,16 @@ declare namespace API {
     recommend: string;
   }
 
+  type PageAppParam = {
+    name?: string;
+    code?: string;
+    recommend?: string;
+    page?: number;
+    perPage?: number;
+  }
+
+  type LikeAppParam = {
+    code: string;
+  }
+
 }

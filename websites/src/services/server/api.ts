@@ -27,8 +27,31 @@ export async function checkFreeApp(body: API.CheckAppParam, options?: { [key: st
 }
 
 /** 分页查询应用 POST /api/app/page/anonymous */
-export async function pageFreeApp(body: API.ListAppParam, options?: { [key: string]: any }) {
+export async function pageFreeApp(body: API.PageAppParam, options?: { [key: string]: any }) {
   return request<API.CreateFreeAppResponse>('/api/app/page/anonymous', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+    },
+    data: JSON.stringify(body),
+    ...(options || {}),
+  });
+}
+
+/** 点赞应用 POST /api/app/like/anonymous */
+export async function likeFreeApp(body: API.LikeAppParam, options?: { [key: string]: any }) {
+  return request<API.CreateFreeAppResponse>('/api/app/like/anonymous', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+    },
+    data: JSON.stringify(body),
+    ...(options || {}),
+  });
+}
+
+export async function listFreeApp(body: { code: any }, options?: { [p: string]: any }) {
+  return request<API.CreateFreeAppResponse>('/api/app/list/anonymous', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',

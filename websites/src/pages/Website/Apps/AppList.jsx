@@ -4,7 +4,7 @@ import {PlayCircleOutlined, LikeOutlined, RightCircleOutlined} from '@ant-design
 
 const {Search} = Input;
 
-import {pageFreeApp} from "@/services/server/api";
+import {likeFreeApp, pageFreeApp} from "@/services/server/api";
 
 function AppList(props) {
   const perPage = 20;
@@ -12,6 +12,7 @@ function AppList(props) {
   const [appPageData, setAppPageData] = useState({page: 1, perPage: 20, content: [], totalPages: 1, total: 100});
   const [displayLoadMore, setDisplayLoadMore] = useState(true);
   const [searchValue, setSearchValue] = useState('');
+  const [like, setLike] = useState({});
 
   useEffect(() => {
     pageFreeApp({perPage: perPage}).then((res) => {
@@ -43,6 +44,19 @@ function AppList(props) {
     });
   }
 
+  const handleLikeApp = (value) => {
+    likeFreeApp({code: value}).then(r => {
+      let timeout;
+      setLike({...like, [value]: true});
+      timeout = setTimeout(() => {
+        setLike({...like, [value]: false});
+      }, 800);
+      return () => {
+        clearTimeout(timeout);
+      }
+    });
+  }
+
   const {dataSource, isMobile, ...tagProps} = props;
   const childrenToRender = appPageData.content.map((item, i) => (
     <Col md={6} xs={24} className="feature7-block" key={item.code}>
@@ -55,11 +69,12 @@ function AppList(props) {
         <div className="scenes">
           <Button
             type=""
-            className="like"
+            className={like[item.code] ? "like-success like" : "like"}
             icon={<LikeOutlined/>}
             size="middle"
             loading={false}
             block={false}
+            onClick={() => {handleLikeApp(item.code)}}
           >
             点赞
           </Button>
@@ -71,7 +86,7 @@ function AppList(props) {
             loading={false}
             block={false}
             target="_blank"
-            href="/app/xxxx"
+            href={`/app/${item.code}`}
           >
             运行
           </Button>
