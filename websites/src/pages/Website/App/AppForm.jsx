@@ -24,10 +24,12 @@ class AppForm extends PureComponent {
       artifacts: '',
       formData: {
         forms: [],
-        messages: {}
       },
+      messages: {},
       copyIsSuccess: false,
-      code: ''
+      code: '',
+      abortController: null,
+      responseCompleted: false
     };
     this.messageApi = message;
     this.formRef = React.createRef();
@@ -37,12 +39,12 @@ class AppForm extends PureComponent {
       let messages;
       if (res.data && res.data.length > 0) {
         messages = {}
-        debugger
         res.data[0].forms.map(item => {
           messages[item.name] = item.props.default;
         })
 
         this.setState({formData: res.data[0], code: code, messages: messages});
+        this.formRef.current.setFieldsValue(messages);
       } else {
         notification.error({
           message: '暂无可用应用',
@@ -53,15 +55,16 @@ class AppForm extends PureComponent {
   }
 
   handleSubmit = () => {
-    const {formData} = this.state;
-    console.log("formData.messages:", formData.messages);
-    if (formData.messages) {
+    const {formData, messages, code} = this.state;
+    console.log("formData.messages:", messages);
+    if (messages) {
       const payload = {
-        messages: formData.messages,
-        code: formData.code
+        messages: messages,
+        code: code
       };
 
-      this.setState({loading: true, artifacts: ''});
+      const abortController = new AbortController();
+      this.setState({loading: true, artifacts: '', abortController: abortController});
 
       try {
         sse = fetchEventSource('http://localhost:8080/api/v2/chat/stream/anonymous',
@@ -74,27 +77,39 @@ class AppForm extends PureComponent {
             },
             method: 'POST',
             body: JSON.stringify(payload),
+            signal: abortController.signal,
             onopen: response => {
               // 设置 SSE 连接的超时时间为 10 分钟
               id = setTimeout(() => {
-                if (sse) {
-                  sse.close();
-                  sse = null;
-                }
+                abortController.abort()
               }, 10 * 60 * 1000);
 
               if (response.ok && response.status === 200) {
-                this.setState({loading: false, artifacts: '', copyIsSuccess: false});
                 console.log("Connection made ", response);
-              } else if (
-                response.status >= 400 &&
-                response.status < 500 &&
-                response.status !== 429
-              ) {
-                let resp = JSON.parse(response);
-                this.messageApi.error(resp.message);
-                console.log("Client side error ", response);
+              } else {
+                if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+                  if(response.status === 403 || response.status === 401) {
+                    this.messageApi.error("网络错误，请重新再次");
+                    abortController.abort();
+                  } else {
+                    response.clone().json().then(errorData => {
+                      try {
+                        this.messageApi.error(errorData.message);
+                        console.log("Client side error ", response);
+                      } catch (e) {
+                        console.error("Error parsing JSON: ", e);
+                      } finally {
+                        abortController.abort();
+                      }
+                    }).catch(e => {
+                      console.error("Error reading response body: ", e);
+                      abortController.abort();
+                      this.messageApi.error(e.message);
+                    });
+                  }
+                }
               }
+              this.setState({loading: false, artifacts: '', copyIsSuccess: false});
             },
             onmessage: event => {
               console.log(event.data);
@@ -122,23 +137,22 @@ class AppForm extends PureComponent {
   };
 
   stopRequest = () => {
-    if (sse) {
-      sse.close();
-      sse = null;
+    const { abortController, responseCompleted } = this.state;
+    if (abortController && !responseCompleted) {
+      abortController.abort();
+      this.setState({ abortController: null });
     }
   }
 
   onFinish = () => {
     const { formData } = this.state;
     const values = this.formRef.current.getFieldsValue();
-    debugger
+    console.log("formdata: " + values);
     this.setState({
       loading: true,
-      formData: {
-        ...formData,
-        messages: values,
-      },
+      messages: values
     });
+    console.log("formdata: " + values);
     this.handleSubmit()
     return false;
   };
@@ -154,7 +168,7 @@ class AppForm extends PureComponent {
   }
 
   render() {
-    const {loading, formData, artifacts, copyIsSuccess} = this.state;
+    const {loading, formData, artifacts, copyIsSuccess, messages} = this.state;
     return (
       <div className="container-wrapper">
         <Button type="link" icon={<AppstoreOutlined/>} className="back-link" href="/apps">返回应用列表</Button>
@@ -162,14 +176,13 @@ class AppForm extends PureComponent {
           <h1 className="title">{formData.icon}{formData.name}</h1>
           <p className="desc">{formData.description}</p>
 
-          <Form ref={this.formRef} onFinish={this.onFinish} className="app-form" initialValues={formData}>
+          <Form ref={this.formRef} onFinish={this.onFinish} className="app-form" initialValues={messages}>
             {formData && formData.forms && formData.forms.map((item, index) => (
               <Form.Item key={index} name={item.name}
                          rules={[
                            {
                              validator: (_, value) => {
                                let validateValue = value || item.props.default;
-                               debugger
                                return validateValue && validateValue.trim() !== ""
                                  ? Promise.resolve()
                                  : Promise.reject(new Error("请输入你的提示词"));

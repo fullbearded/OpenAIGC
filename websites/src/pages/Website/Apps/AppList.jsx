@@ -85,7 +85,6 @@ function AppList(props) {
             size="middle"
             loading={false}
             block={false}
-            target="_blank"
             href={`/app/${item.code}`}
           >
             运行
