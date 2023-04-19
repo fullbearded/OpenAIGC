@@ -24,16 +24,25 @@ class AppForm extends PureComponent {
       artifacts: '',
       formData: {
         forms: [],
-        messages: []
+        messages: {}
       },
-      copyIsSuccess: false
+      copyIsSuccess: false,
+      code: ''
     };
     this.messageApi = message;
+    this.formRef = React.createRef();
 
     const { code } = this.props.match.params;
     listFreeApp({ code }).then(res => {
-      if(res.data && res.data.length > 0) {
-        this.setState({formData: res.data[0]});
+      let messages;
+      if (res.data && res.data.length > 0) {
+        messages = {}
+        debugger
+        res.data[0].forms.map(item => {
+          messages[item.name] = item.props.default;
+        })
+
+        this.setState({formData: res.data[0], code: code, messages: messages});
       } else {
         notification.error({
           message: '暂无可用应用',
@@ -45,25 +54,23 @@ class AppForm extends PureComponent {
 
   handleSubmit = () => {
     const {formData} = this.state;
+    console.log("formData.messages:", formData.messages);
     if (formData.messages) {
       const payload = {
         messages: formData.messages,
-        user: 'user',
+        code: formData.code
       };
-
-      debugger
 
       this.setState({loading: true, artifacts: ''});
 
       try {
-        sse = fetchEventSource('http://localhost:8080/api/chat/stream',
+        sse = fetchEventSource('http://localhost:8080/api/v2/chat/stream/anonymous',
           {
             headers: {
               'Content-Type': 'application/json',
               Accept: 'text/event-stream',
               'Connection': 'keep-alive',
-              'Cache-Control': 'no-cache',
-              Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImNvZGUiOiI3YzhhZWE5ZDA0ZTcwYjNmM2RmMjg4MTVmNmU4YTJhYiIsImlhdCI6MTY4MDg1Nzc4MSwiZXhwIjoxNjgwOTQ0MTgxfQ.njwMFk2BPq1ShUkz08P8i88DWiFPq2BV4A6J9cYsa6k',
+              'Cache-Control': 'no-cache'
             },
             method: 'POST',
             body: JSON.stringify(payload),
@@ -102,6 +109,9 @@ class AppForm extends PureComponent {
             },
             onerror: err => {
               console.log("There was an error from server", err);
+              if (sse) {
+                this.stopRequest()
+              }
             },
           },
         )
@@ -118,10 +128,16 @@ class AppForm extends PureComponent {
     }
   }
 
-  onFinish = (values) => {
+  onFinish = () => {
+    const { formData } = this.state;
+    const values = this.formRef.current.getFieldsValue();
+    debugger
     this.setState({
       loading: true,
-      formData: values
+      formData: {
+        ...formData,
+        messages: values,
+      },
     });
     this.handleSubmit()
     return false;
@@ -146,14 +162,25 @@ class AppForm extends PureComponent {
           <h1 className="title">{formData.icon}{formData.name}</h1>
           <p className="desc">{formData.description}</p>
 
-          <Form onFinish={this.onFinish} className="app-form" initialValues={formData}>
+          <Form ref={this.formRef} onFinish={this.onFinish} className="app-form" initialValues={formData}>
             {formData && formData.forms && formData.forms.map((item, index) => (
-              <Form.Item name="messages[]" rules={[{required: true, message: '请输入你的提示词'}]}>
+              <Form.Item key={index} name={item.name}
+                         rules={[
+                           {
+                             validator: (_, value) => {
+                               let validateValue = value || item.props.default;
+                               debugger
+                               return validateValue && validateValue.trim() !== ""
+                                 ? Promise.resolve()
+                                 : Promise.reject(new Error("请输入你的提示词"));
+                             },
+                           },
+                         ]} initialValues={item.props.default}>
                 <TextArea className="form-textarea" placeholder={item.props.placeholder}
                           autoSize={{minRows: 6}}
                           showCount
                           maxLength={800}
-                          initialValues={item.props.placeholder}
+                          defaultValue={item.props.default}
                 />
               </Form.Item>
             ))}
