@@ -10,22 +10,22 @@ import lombok.NoArgsConstructor;
  * @author: Runner.dada
  * @date: 2021/1/26
  * @description: 业务自定义的分页
-**/
+ **/
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Page<T> {
 
-    @Builder.Default
-    private Integer page = 1;
+	@Builder.Default
+	private Long page = 1l;
 
-    @Builder.Default
-    private Integer perPage = 20;
+	@Builder.Default
+	private Long perPage = 20l;
 
-    private Integer totalPages;
+	private Long totalPages;
 
-    private Integer totalElements;
+	private Integer total;
 
-    private List<T> content;
+	private List<T> content;
 }
