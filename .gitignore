@@ -6,3 +6,5 @@ include websites/.gitignore
 *.iml
 
 docker-compose/docker-compose-prod.yml
+
+data

@@ -67,7 +67,7 @@ class AppForm extends PureComponent {
       this.setState({loading: true, artifacts: '', abortController: abortController});
 
       try {
-        sse = fetchEventSource('http://localhost:8080/api/v2/chat/stream/anonymous',
+        sse = fetchEventSource('/api/v2/chat/stream/anonymous',
           {
             headers: {
               'Content-Type': 'application/json',
