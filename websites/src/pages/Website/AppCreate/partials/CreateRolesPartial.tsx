@@ -32,13 +32,19 @@ const roleOptions = [
 
 const CreateRolePartial: React.FC = () => {
   const [formData, setFormData] = useContext(FormDataContext);
-  const handleFormChange = (index: number, key: string, value: any) => {
-    const newRoles = [...formData.roles];
-    newRoles[index] = {
-      ...newRoles[index],
-      [key]: value,
-    };
-    setFormData({...formData, roles: newRoles});
+  const updateRole = (callback: (roles: any) => any) => {
+    setFormData((prevFormData: { roles: any; }) => {
+      const newRoles = callback(prevFormData.roles);
+      return { ...prevFormData, roles: newRoles };
+    });
+  };
+
+  const handleFormChange = (id: React.Key | null | undefined, key: string, value: any) => {
+    updateRole((roles) => {
+      const index = roles.findIndex((v: { id: React.Key | null | undefined; }) => v.id === id);
+      const updatedRole = { ...roles[index], [key]: value, index: index };
+      return [...roles.slice(0, index), updatedRole, ...roles.slice(index + 1)];
+    });
   };
   const messageOrderWarning = useMemo(() => {
     const roles = formData.roles;
@@ -52,9 +58,10 @@ const CreateRolePartial: React.FC = () => {
       return '通常，对话会在用户和助手之间交替进行。';
     } else if (roles[roles.length - 1].type !== 'user') {
       return '通常，最后一条对话是用户发出的。';
+    } else {
+      return '';
     }
-    return '';
-  }, [formData.roles]);
+  }, [formData.roles, formData.roles.length]);
 
   const insertRole = (index: number) => {
     const newRoles = [...formData.roles];
@@ -65,13 +72,14 @@ const CreateRolePartial: React.FC = () => {
     } else if (prevRoleType === 'user') {
       newRoleType = 'assistant';
     }
-    newRoles.splice(index + 1, 0, {
+    const newRole = {
       id: uuidv4(),
       template: '',
       type: newRoleType,
+    };
+    updateRole((roles) => {
+      return [...roles.slice(0, index + 1), newRole, ...roles.slice(index + 1)];
     });
-
-    setFormData({...formData, roles: newRoles});
   };
 
   const removeRole = (id: React.Key | null | undefined) => {
@@ -80,7 +88,6 @@ const CreateRolePartial: React.FC = () => {
   };
 
   const appendVariable = (index: number, _var: string) => {
-    debugger
     const newRoles = [...formData.roles];
     newRoles[index].template += `\${${_var}}`;
 
@@ -94,16 +101,24 @@ const CreateRolePartial: React.FC = () => {
 
   return (
     <ProCard className="create-roles-from-wrapper">
-      {messageOrderWarning && (
+      {messageOrderWarning ? (
         <Alert
           message={messageOrderWarning}
           type="warning"
           showIcon
           className="mb-2"
         />
-      )}
+      ) : (
+        <Alert
+          message="会话格式正确"
+          type="success"
+          showIcon
+          className="mb-2"
+        />
+      )
+      }
       <ProForm submitter={false}>
-        {formData.roles.map((item: { id: React.Key | null | undefined; type: any; template: any; }, index: number) => (
+        {formData.roles.map((item: { id: React.Key | null | undefined; type: any; template: any;  index: any;}, index: number) => (
           <React.Fragment key={item.id}>
             <div className="item-wrapper">
               <div className="form-buttons">
@@ -139,7 +154,7 @@ const CreateRolePartial: React.FC = () => {
                 initialValue={item.type}
                 fieldProps={{
                   onSelect: (value) => {
-                    handleFormChange(index, "type", value);
+                    handleFormChange(item.id, "type", value);
                   },
                   value: item.type
                 }}
@@ -163,7 +178,7 @@ const CreateRolePartial: React.FC = () => {
                     placeholder={'请输入模板'}
                     fieldProps={{
                       onChange: (e) => {
-                        handleFormChange(index, 'template', e.target.value);
+                        handleFormChange(item.id, 'template', e.target.value);
                       },
                       value: item.template
                     }}

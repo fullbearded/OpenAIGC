@@ -7,6 +7,7 @@ declare namespace API {
     id?: string;
     template?: string;
     type?: string;
+    index?: number
   }
 
   type FormItem = {

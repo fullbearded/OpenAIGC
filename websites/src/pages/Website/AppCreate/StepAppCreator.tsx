@@ -18,6 +18,7 @@ import CreateFormPartial from "@/pages/Website/AppCreate/partials/CreateFormPart
 import CreateRolesPartial from "@/pages/Website/AppCreate/partials/CreateRolesPartial";
 import {AppstoreOutlined} from "@ant-design/icons";
 import {checkFreeApp, createFreeApp} from "@/services/server/api";
+import AppFormComponent from "@/pages/Website/AppCreate/partials/AppFormComponent";
 
 // 初始化 formData
 const initialFormData: API.CreateAppData = {
@@ -44,11 +45,13 @@ const initialFormData: API.CreateAppData = {
       id: uuidv4(),
       type: 'system',
       template: '如何委婉巧妙的回复老板，给出5种回答，内容是：',
+      index: 11
     },
     {
       id: uuidv4(),
       type: 'user',
       template: '${message}',
+      index: 22
     },
   ],
   author: '',
@@ -73,8 +76,8 @@ export default () => {
   };
 
   return (
-    <div className="home-page-wrapper">
-      <Row justify="center" align="middle" style={{minHeight: '100vh'}}>
+    <div className="home-page-wrapper-content">
+      <Row className="create-container" justify="center" align="middle" style={{minHeight: '100vh'}}>
         <Col xs={24} sm={16} md={12} lg={10} xl={8}>
           <Button type="link" icon={<AppstoreOutlined/>} className="back-link" href="/apps">返回应用列表</Button>,
           <ProCard className="app-creator-wrapper home-page">
@@ -95,7 +98,7 @@ export default () => {
                   name: string;
                 }>
                   name="step1"
-                  title="创建应用(1/3)"
+                  title="创建应用(1/4)"
                   stepProps={{
                     description: '应用基本信息',
                   }}
@@ -119,7 +122,7 @@ export default () => {
                   name: string;
                 }>
                   name="step2"
-                  title="创建应用(2/3)"
+                  title="创建应用(2/4)"
                   stepProps={{
                     description: '表单信息',
                   }}
@@ -138,7 +141,7 @@ export default () => {
                   name: string;
                 }>
                   name="step3"
-                  title="创建应用(3/3)"
+                  title="创建应用(3/4)"
                   stepProps={{
                     description: 'AI角色信息',
                   }}
@@ -148,6 +151,21 @@ export default () => {
                   }}
                 >
                   <CreateRolesPartial/>
+                </StepsForm.StepForm>
+                <StepsForm.StepForm<{
+                  name: string;
+                }>
+                  name="step4"
+                  title="创建应用(4/4)"
+                  stepProps={{
+                    description: '预览测试',
+                  }}
+                  onFinish={async () => {
+                    console.log(formRef.current?.getFieldsValue());
+                    return false;
+                  }}
+                >
+                  <AppFormComponent/>
                 </StepsForm.StepForm>
               </StepsForm>
             </FormDataContext.Provider>
