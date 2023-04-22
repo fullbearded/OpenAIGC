@@ -6,6 +6,7 @@ import { getChildrenToRender } from './utils';
 import {likeFreeApp, pageFreeApp} from "@/services/server/api";
 
 function Feature7(props) {
+
   const perPage = 16;
 
   const [appPageData, setAppPageData] = useState({page: 1, perPage: 20, content: [], totalPages: 1, total: 100});
@@ -14,7 +15,6 @@ function Feature7(props) {
 
   useEffect(() => {
     pageFreeApp({recommend: "HOME", perPage: perPage}).then((res) => {
-      debugger
       if (res.data.content.length === 0) {
         setShowSection(false);
       }

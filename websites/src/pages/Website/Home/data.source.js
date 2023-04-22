@@ -23,7 +23,7 @@ export const Banner50DataSource = {
         name: 'button',
         className: 'banner5-button-wrapper',
         children: {
-          href: '#',
+          href: '/apps/create',
           className: 'banner5-button',
           type: 'primary',
           children: '创建你自己的免费应用',
