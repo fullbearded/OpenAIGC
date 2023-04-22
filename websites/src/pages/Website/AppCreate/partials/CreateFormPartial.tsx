@@ -181,7 +181,7 @@ const CreateFormPartial: React.FC = () => {
                 placeholder="请输入标签"
                 fieldProps={{
                   maxLength: 20,
-                  value: item.label
+                  // value: item.label
                 }}
                 initialValue={item.label}
               />
@@ -216,9 +216,9 @@ const CreateFormPartial: React.FC = () => {
                            label="占位符"
                            fieldProps={{
                              maxLength: 100,
-                             value: item.props.placeholder
                            }}
                            initialValue={item.props.placeholder}
+                           placeholder="请输入占位符"
               />
               <ProFormText
                 name={[index, 'props', 'default']}

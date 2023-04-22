@@ -34,7 +34,7 @@ const initialFormData: API.CreateAppData = {
       type: 'ProFormText',
       label: '',
       props: {
-        placeholder: '比如说：领导，我不想干这个活',
+        placeholder: '请输入内容',
         type: 'textarea',
         default: "领导，我不想干这个活"
       },
