@@ -22,6 +22,7 @@ declare namespace API {
     placeholder: string;
     type: string;
     default: string;
+    options: string[];
   }
 
 

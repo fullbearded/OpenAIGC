@@ -1,13 +1,9 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 // @ts-ignore
 import {v4 as uuidv4} from 'uuid';
-import {Button, Divider, Collapse} from 'antd';
-import {
-  ProForm,
-  ProFormSelect,
-  ProFormText
-} from '@ant-design/pro-components';
-import {PlusOutlined, MinusOutlined} from '@ant-design/icons';
+import {Button, Collapse, Divider} from 'antd';
+import {ProForm, ProFormSelect, ProFormText} from '@ant-design/pro-components';
+import {MinusOutlined, PlusOutlined} from '@ant-design/icons';
 import FormDataContext from '../FormDataContext';
 import './less/common.less';
 import './less/createForm.less';
@@ -17,20 +13,48 @@ const {Panel} = Collapse;
 const formTypes = [
   {
     value: 'ProFormText',
-    label: 'Input',
+    label: 'ProFormText',
+  },
+  {
+    value: 'ProFormSelect',
+    label: 'ProFormSelect',
   }
 ];
 
 
 const CreateFormPartial: React.FC = () => {
   const [formData, setFormData] = useContext(FormDataContext);
+
+  const updateForms = (callback: (forms: any) => any) => {
+    setFormData((prevFormData: { forms: any }) => {
+      const newForms = callback(prevFormData.forms);
+      return { ...prevFormData, forms: newForms };
+    });
+  };
+
   const handleFormChange = (index: number, key: string, value: any) => {
-    const newForms = [...formData.forms];
-    newForms[index] = {
-      ...newForms[index],
-      [key]: value,
-    };
-    setFormData({...formData, forms: newForms});
+    updateForms((forms: any) => {
+      const newForms = [...forms];
+      newForms[index] = {
+        ...newForms[index],
+        [key]: value,
+      };
+      return newForms;
+    });
+  };
+
+  const handleFormPropsChange = (index: number, propName: string, value: any) => {
+    updateForms((forms: any) => {
+      const newForms = [...forms];
+      newForms[index] = {
+        ...newForms[index],
+        props: {
+          ...newForms[index].props,
+          [propName]: value,
+        },
+      };
+      return newForms;
+    });
   };
 
   const [remainingChars, setRemainingChars] = useState<{ [key: string]: number }>(
@@ -181,9 +205,12 @@ const CreateFormPartial: React.FC = () => {
                 placeholder="请输入标签"
                 fieldProps={{
                   maxLength: 20,
-                  // value: item.label
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>)  => {
+                    handleFormChange(index, 'label', e.target.value);
+                  },
                 }}
                 initialValue={item.label}
+
               />
               <ProFormSelect
                 name={[index, 'type']}
@@ -193,42 +220,70 @@ const CreateFormPartial: React.FC = () => {
                 rules={[{required: true, message: '类型必填'}]}
                 initialValue={item.type}
                 fieldProps={{
-                  value: item.type
+                  onChange: (value: any) => {
+                    handleFormChange(index, 'type', value);
+                  },
                 }}
               />
               <Divider>属性</Divider>
 
-              <ProFormSelect
-                name={[index, 'props', 'type']}
-                label="输入框类型"
-                options={[
-                  {
-                    value: 'textarea',
-                    label: 'Textarea',
-                  },
-                ]}
-                initialValue="textarea"
-                fieldProps={{
-                  allowClear: true
-                }}
-              />
+              {formData.forms[index].type === 'ProFormSelect' ? (
+                <ProFormSelect
+                  className="options-select"
+                  label="创建选项"
+                  name={[index, 'props', 'options']}
+                  mode="tags"
+                  placeholder="输入选项并按回车"
+                  fieldProps={{
+                    onChange: (value: any) => {
+                      handleFormPropsChange(index, 'options', value);
+                    },
+                  }}
+                />
+              ) : formData.forms[index].type === 'ProFormText' ? (
+                <ProFormSelect
+                  name={[index, 'props', 'type']}
+                  label="输入框类型"
+                  options={[
+                    {
+                      value: 'textarea',
+                      label: 'Textarea',
+                    },
+                  ]}
+                  initialValue="textarea"
+                  fieldProps={{
+                    allowClear: true,
+                    onChange: (value: any) => {
+                      handleFormPropsChange(index, 'type', value);
+                    },
+                  }}
+                />
+              ) : null}
+
               <ProFormText name={[index, 'props', 'placeholder']}
                            label="占位符"
                            fieldProps={{
                              maxLength: 100,
+                             onChange: (e: React.ChangeEvent<HTMLInputElement>)  => {
+                               handleFormPropsChange(index, 'placeholder', e.target.value);
+                             },
                            }}
                            initialValue={item.props.placeholder}
                            placeholder="请输入占位符"
+
               />
               <ProFormText
                 name={[index, 'props', 'default']}
                 label="默认值"
                 fieldProps={{
                   maxLength: 100,
-                  // value: item.props.default
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>)  => {
+                    handleFormPropsChange(index, 'default', e.target.value);
+                  },
                 }}
                 placeholder="请输入默认值"
                 initialValue={item.props.default}
+
               />
             </Panel>
 

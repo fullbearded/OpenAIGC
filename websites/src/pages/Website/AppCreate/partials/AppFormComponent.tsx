@@ -1,4 +1,5 @@
-import {Button, Form, Input, message, Spin} from 'antd';
+import {Button, Form, Input, message, Spin, Select} from 'antd';
+
 import {LoadingOutlined} from '@ant-design/icons';
 import React, {useContext, useState} from 'react';
 import {fetchEventSource,} from "@microsoft/fetch-event-source";
@@ -6,9 +7,9 @@ import './less/app-form-component.less'
 
 import md from "@/components/markdown-it"
 import FormDataContext from '../FormDataContext';
-import {NamePath} from 'antd/lib/form/interface';
 
 const {TextArea} = Input;
+const {Option} = Select;
 
 const antIcon = <LoadingOutlined style={{fontSize: 24}} spin/>;
 
@@ -152,6 +153,55 @@ const AppFormComponent: React.FC = () => {
     e.preventDefault();
   };
 
+  const generateOptions = (options: string[]) =>
+    options.map((option, index) => ({
+      value: option,
+      label: option,
+    }));
+
+  const renderFormSelect = (item: any, index: any) => {
+    console.log(item.props && item.props.default ? item.props.default : '')
+    return (
+      <Form.Item key={index} name={item.name} initialValue={item.props && item.props.default ? item.props.default : ''}>
+        {
+          <Select
+            className="options-select"
+            style={{width: '100%'}}
+            placeholder={item.props.placeholder}
+            options={item.props && item.props.options ? generateOptions(item.props.options) : []}
+          >
+          </Select>
+
+        }
+      </Form.Item>
+    )
+  }
+
+  const renderFormText = (item: any, index: any) => {
+    return (
+      <Form.Item key={index} name={item.name}
+                 rules={[
+                   {
+                     validator: (_, value) => {
+                       const validateValue = value || item.props.default;
+                       return validateValue && validateValue.trim() !== ""
+                         ? Promise.resolve()
+                         : Promise.reject(new Error("请输入你的提示词"));
+                     },
+                   },
+                 ]} initialValue={item.props.default}>
+        {
+          <TextArea className="form-textarea" placeholder={item.props.placeholder}
+                    autoSize={{minRows: 6}}
+                    showCount
+                    maxLength={800}
+                    defaultValue={item.props.default}
+          />
+        }
+      </Form.Item>
+    )
+  }
+
   return (
     <div className="container-wrapper">
       <div className="form-container">
@@ -160,25 +210,18 @@ const AppFormComponent: React.FC = () => {
         <Form ref={formRef}
               onSubmitCapture={onSubmitCapture}
               onFinish={onSubmitCapture} className="app-form" initialValues={messages}>
-          {formData && formData.forms && formData.forms.map((item: { name: NamePath | undefined; props: { default: string | number | readonly string[] | undefined; placeholder: string | undefined; }; }, index: React.Key | null | undefined) => (
-            <Form.Item key={index} name={item.name}
-                       rules={[
-                         {
-                           validator: (_, value) => {
-                             const validateValue = value || item.props.default;
-                             return validateValue && validateValue.trim() !== ""
-                               ? Promise.resolve()
-                               : Promise.reject(new Error("请输入你的提示词"));
-                           },
-                         },
-                       ]} initialValue={item.props.default}>
-              <TextArea className="form-textarea" placeholder={item.props.placeholder}
-                        autoSize={{minRows: 6}}
-                        showCount
-                        maxLength={800}
-                        defaultValue={item.props.default}
-              />
-            </Form.Item>
+          {formData && formData.forms && formData.forms.map((item: {
+            name: string | undefined;
+            props: {
+              default: string | undefined;
+              placeholder: string | undefined;
+              options: string[] | [];
+            };
+            type: string | undefined
+          }, index: React.Key | null | undefined) => (
+            item.type === 'ProFormSelect' ?
+              renderFormSelect(item, index) :
+              renderFormText(item, index)
           ))}
           <Form.Item>
             <Button type="primary" htmlType="submit" className="form-button">

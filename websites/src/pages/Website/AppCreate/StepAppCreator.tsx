@@ -36,7 +36,8 @@ const initialFormData: API.CreateAppData = {
       props: {
         placeholder: '请输入内容',
         type: 'textarea',
-        default: "领导，我不想干这个活"
+        default: "领导，我不想干这个活",
+        options: []
       },
     },
   ],
@@ -146,7 +147,8 @@ export default () => {
                     description: 'AI角色信息',
                   }}
                   onFinish={async () => {
-                    // console.log(formRef.current?.getFieldsValue());
+                    console.log(formRef.current?.getFieldsValue());
+                    console.log(formData)
                     return true;
                   }}
                 >
