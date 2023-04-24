@@ -12,6 +12,7 @@ import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
 
 import MainLoading from '@/components/MainLoading';
 import {message, notification} from "antd";
+import {getToken} from "@/utils";
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 const homePath = '/';
@@ -39,7 +40,13 @@ const errorHandler = async (error: ResponseError) => {
       }
     }
     if (response.status === 401) {
-      message.error('登录失效，请重新登录');
+      try {
+        const errorData = await response.clone().json(); // 或者使用 .text()
+        const errorMessage = errorData.message || '业务异常';
+        message.error(errorMessage);
+      } catch (e) {
+        message.error('登录失败，请重新登录');
+      }
       history.push(loginPath);
     }
     if (response.status === 403) {
@@ -64,8 +71,18 @@ const errorHandler = async (error: ResponseError) => {
   throw error;
 };
 
+const authHeaderInterceptor = (url: string, options: any) => {
+  const token = getToken()
+  const authHeader = { Authorization: 'Bearer ' + token };
+  return {
+    url: `${url}`,
+    options: { ...options, interceptors: true, headers: authHeader },
+  };
+};
+
 export const request: RequestConfig = {
   errorHandler,
+  requestInterceptors: [authHeaderInterceptor]
 };
 
 /**

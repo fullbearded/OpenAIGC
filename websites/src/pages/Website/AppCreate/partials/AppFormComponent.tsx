@@ -1,4 +1,4 @@
-import {Button, Form, Input, message, Spin, Select} from 'antd';
+import {Button, Form, Input, message, Select, Spin} from 'antd';
 
 import {LoadingOutlined} from '@ant-design/icons';
 import React, {useContext, useState} from 'react';
@@ -9,7 +9,6 @@ import md from "@/components/markdown-it"
 import FormDataContext from '../FormDataContext';
 
 const {TextArea} = Input;
-const {Option} = Select;
 
 const antIcon = <LoadingOutlined style={{fontSize: 24}} spin/>;
 
@@ -202,11 +201,13 @@ const AppFormComponent: React.FC = () => {
     )
   }
 
+
   return (
     <div className="container-wrapper">
       <div className="form-container">
         <h1 className="title">{formData.icon} {formData.name}</h1>
         <p className="desc">{formData.description}</p>
+        {/*@ts-ignore*/}
         <Form ref={formRef}
               onSubmitCapture={onSubmitCapture}
               onFinish={onSubmitCapture} className="app-form" initialValues={messages}>

@@ -26,7 +26,7 @@ export const Nav30DataSource = {
         className: 'header3-item',
         children: {
           href: '#',
-          children: [{ children: <p>登录</p>, name: 'text' }],
+          children: [{ children: <a href="/user/login">登录</a>, name: 'text' }],
         },
       },
       {

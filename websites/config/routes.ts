@@ -7,10 +7,17 @@
         name: 'login',
         path: '/user/login',
         component: './account/user/Login',
-      },
+      }
+    ],
+  },
+  {
+    path: '/user',
+    access: 'canUser',
+    routes: [
       {
-        component: './Common/Result404',
-        layout: false,
+        name: 'apps',
+        path: '/user/apps',
+        component: './account/Welcome',
       },
     ],
   },
@@ -31,19 +38,6 @@
         layout: false,
       },
     ],
-  },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './account/TableList',
-  },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './account/Welcome',
-    layout: false,
   },
   {
     path: '/',
