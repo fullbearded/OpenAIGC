@@ -1,4 +1,4 @@
-import {Button, Form, Input, message, notification, Spin, Typography} from 'antd';
+import {Button, Form, Input, message, notification, Select, Spin, Typography} from 'antd';
 import {AppstoreOutlined, LoadingOutlined} from '@ant-design/icons';
 import React, {PureComponent} from 'react';
 import {fetchEventSource,} from "@microsoft/fetch-event-source";
@@ -167,6 +167,55 @@ class AppForm extends PureComponent {
     }, 5000);
   }
 
+  renderFormSelect = (item, index) => {
+    console.log(item.props && item.props.default ? item.props.default : '')
+    return (
+      <Form.Item key={index} name={item.name} initialValue={item.props && item.props.default ? item.props.default : ''}>
+        {
+          <Select
+            className="options-select"
+            style={{width: '100%'}}
+            placeholder={item.props.placeholder}
+            options={item.props && item.props.options ? this.generateOptions(item.props.options) : []}
+          >
+          </Select>
+
+        }
+      </Form.Item>
+    )
+  }
+
+  renderFormText = (item, index) => {
+    return (
+      <Form.Item key={index} name={item.name}
+                 rules={[
+                   {
+                     validator: (_, value) => {
+                       const validateValue = value || item.props.default;
+                       return validateValue && validateValue.trim() !== ""
+                         ? Promise.resolve()
+                         : Promise.reject(new Error("请输入你的提示词"));
+                     },
+                   },
+                 ]} initialValue={item.props.default}>
+        {
+          <TextArea className="form-textarea" placeholder={item.props.placeholder}
+                    autoSize={{minRows: 6}}
+                    showCount
+                    maxLength={800}
+                    defaultValue={item.props.default}
+          />
+        }
+      </Form.Item>
+    )
+  }
+
+  generateOptions = (options) =>
+    options.map((option, index) => ({
+      value: option,
+      label: option,
+    }));
+
   render() {
     const {loading, formData, artifacts, copyIsSuccess, messages} = this.state;
     return (
@@ -178,24 +227,9 @@ class AppForm extends PureComponent {
 
           <Form ref={this.formRef} onFinish={this.onFinish} className="app-form" initialValues={messages}>
             {formData && formData.forms && formData.forms.map((item, index) => (
-              <Form.Item key={index} name={item.name}
-                         rules={[
-                           {
-                             validator: (_, value) => {
-                               let validateValue = value || item.props.default;
-                               return validateValue && validateValue.trim() !== ""
-                                 ? Promise.resolve()
-                                 : Promise.reject(new Error("请输入你的提示词"));
-                             },
-                           },
-                         ]} initialValues={item.props.default}>
-                <TextArea className="form-textarea" placeholder={item.props.placeholder}
-                          autoSize={{minRows: 6}}
-                          showCount
-                          maxLength={800}
-                          defaultValue={item.props.default}
-                />
-              </Form.Item>
+              item.type === 'ProFormSelect' ?
+                this.renderFormSelect(item, index) :
+                this.renderFormText(item, index)
             ))}
             <Form.Item>
               <Button type="primary" htmlType="submit" className="form-button">
