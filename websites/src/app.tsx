@@ -14,9 +14,10 @@ import MainLoading from '@/components/MainLoading';
 import {message, notification} from "antd";
 import {getToken} from "@/utils";
 const isDev = process.env.NODE_ENV === 'development';
-const loginPath = '/user/login';
+const loginPath = '/login';
 const homePath = '/';
 const adminPath = '/admin';
+const userPath = '/user'
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -114,8 +115,9 @@ export async function getInitialState(): Promise<{
     };
   }
 
-  // 如果不是后台页面
-  if (history.location.pathname.startsWith(adminPath)) {
+  // 如果需要权限验证
+  if (history.location.pathname.startsWith(adminPath) ||
+    history.location.pathname.startsWith(userPath)) {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -135,7 +137,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     rightContentRender: () => <RightContent/>,
     disableContentMargin: false,
     waterMarkProps: {
-      content: initialState?.currentUser?.name,
+      content: initialState?.currentUser?.username,
     },
     footerRender: () => <Footer/>,
     onPageChange: () => {
@@ -146,7 +148,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
         location.pathname !== loginPath &&
         location.pathname !== homePath
       ) {
-        // history.push(loginPath);
+        history.push(loginPath);
       }
     },
     links: isDev
@@ -166,11 +168,11 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
     childrenRender: (children: any, props: { location: { pathname: string | string[] } }) => {
-      // if (initialState?.loading) return <PageLoading />;
+      if (initialState?.loading) return <MainLoading />;
       return (
         <>
           {children}
-          {!props.location?.pathname?.includes('/login') && (
+          {!props.location?.pathname?.includes(loginPath) && (
             <SettingDrawer
               disableUrlParams
               enableDarkTheme

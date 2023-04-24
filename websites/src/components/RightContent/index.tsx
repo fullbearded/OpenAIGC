@@ -1,9 +1,8 @@
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Space } from 'antd';
+import {QuestionCircleOutlined} from '@ant-design/icons';
+import {Space} from 'antd';
 import React from 'react';
-import { SelectLang, useModel } from 'umi';
-import HeaderSearch from '../HeaderSearch';
-import Avatar from './AvatarDropdown';
+import {useModel} from 'umi';
+import AvatarDropdown from './AvatarDropdown';
 import styles from './index.less';
 
 export type SiderTheme = 'light' | 'dark';
@@ -23,29 +22,7 @@ const GlobalHeaderRight: React.FC = () => {
   }
   return (
     <Space className={className}>
-      <HeaderSearch
-        className={`${styles.action} ${styles.search}`}
-        placeholder="站内搜索"
-        defaultValue="umi ui"
-        options={[
-          { label: <a href="https://umijs.org/zh/guide/umi-ui.html">umi ui</a>, value: 'umi ui' },
-          {
-            label: <a href="https://opaigc.com">OpenAIGC</a>,
-            value: 'OpenAIGC',
-          },
-          {
-            label: <a href="https://opaigc.com/">OpenAIGC</a>,
-            value: 'OpenAIGC',
-          },
-          {
-            label: <a href="https://opaigc.com/">OpenAIGC</a>,
-            value: 'OpenAIGC',
-          },
-        ]}
-        // onSearch={value => {
-        //   console.log('input', value);
-        // }}
-      />
+      {/*帮助中心，操作指南*/}
       <span
         className={styles.action}
         onClick={() => {
@@ -54,8 +31,9 @@ const GlobalHeaderRight: React.FC = () => {
       >
         <QuestionCircleOutlined />
       </span>
-      <Avatar />
-      <SelectLang className={styles.action} />
+      <AvatarDropdown />
+      {/*暂时不支持语言选择*/}
+      {/*<SelectLang className={styles.action} />*/}
     </Space>
   );
 };

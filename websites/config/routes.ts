@@ -1,26 +1,25 @@
 ﻿export default [
   {
     path: '/user',
-    layout: false,
+    access: 'canUser',
+    name: 'user',
+    icon: 'crown',
+    menu: false,
     routes: [
       {
-        name: 'login',
-        path: '/user/login',
-        component: './account/user/Login',
-      }
-    ],
-  },
-  {
-    path: '/user',
-    access: 'canUser',
-    routes: [
+        name: 'user-home',
+        path: '/',
+        component: './User/Home',
+        layout: false
+      },
       {
         name: 'apps',
-        path: '/user/apps',
-        component: './account/Welcome',
+        path: '/users/apps',
+        component: './Website/Apps',
       },
     ],
   },
+
   {
     path: '/admin',
     name: 'admin',
@@ -44,6 +43,12 @@
     name: 'home',
     icon: 'smile',
     component: './Website/Home',
+    layout: false,
+  },
+  {
+    name: 'login',
+    path: '/login',
+    component: './Login',
     layout: false,
   },
   {
