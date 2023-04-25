@@ -1,4 +1,4 @@
-import {Button, Form, Input, message, notification, Select, Spin, Typography} from 'antd';
+import {Button, Form, Input, message, notification, Select, Spin, Affix} from 'antd';
 import {AppstoreOutlined, LoadingOutlined} from '@ant-design/icons';
 import React, {PureComponent} from 'react';
 import {fetchEventSource,} from "@microsoft/fetch-event-source";
@@ -7,13 +7,18 @@ import './app-form.less'
 
 import md from "@/components/markdown-it"
 import {listFreeApp} from "@/services/server/api";
-
+import { enquireScreen } from 'enquire-js';
 const {TextArea} = Input;
 
 const antIcon = <LoadingOutlined style={{fontSize: 24}} spin/>;
 
 let sse = null;
 let id = null;
+let isMobile;
+enquireScreen((b) => {
+  isMobile = b;
+});
+
 
 class AppForm extends PureComponent {
 
@@ -29,7 +34,8 @@ class AppForm extends PureComponent {
       copyIsSuccess: false,
       code: '',
       abortController: null,
-      responseCompleted: false
+      responseCompleted: false,
+      isMobile
     };
     this.messageApi = message;
     this.formRef = React.createRef();
@@ -51,6 +57,12 @@ class AppForm extends PureComponent {
           description: '暂无可用应用',
         });
       }
+    });
+  }
+
+  componentDidMount() {
+    enquireScreen((b) => {
+      this.setState({ isMobile: !!b });
     });
   }
 
@@ -217,11 +229,17 @@ class AppForm extends PureComponent {
     }));
 
   render() {
-    const {loading, formData, artifacts, copyIsSuccess, messages} = this.state;
+    const {loading, formData, artifacts, copyIsSuccess, messages, isMobile} = this.state;
     return (
       <div className="container-wrapper">
-        <Button type="link" icon={<AppstoreOutlined/>} className="back-link" href="/apps">返回应用列表</Button>
-        <div className="form-container">
+        {isMobile ? (
+            <Affix style={{position: 'absolute', top: '80px', left: '20px', zIndex: 1000}}>
+              <Button size="large" icon={<AppstoreOutlined />}  href="/apps">应用列表</Button>
+            </Affix>
+        ) : (
+          <Button type="link" icon={<AppstoreOutlined />} className="back-link" href="/apps">返回应用列表</Button>
+        )}
+        <div className="form-container" style={isMobile ? {marginTop: "40px"} : {}}>
           <h1 className="title">{formData.icon}{formData.name}</h1>
           <p className="desc">{formData.description}</p>
 
