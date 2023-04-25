@@ -73,6 +73,10 @@ const errorHandler = async (error: ResponseError) => {
 };
 
 const authHeaderInterceptor = (url: string, options: any) => {
+  if(url.includes("anonymous")) {
+    return {url: `${url}`, options: {...options}}
+  }
+
   const token = getToken()
   const authHeader = { Authorization: 'Bearer ' + token };
   return {
@@ -115,6 +119,7 @@ export async function getInitialState(): Promise<{
     };
   }
 
+
   // 如果需要权限验证
   if (history.location.pathname.startsWith(adminPath) ||
     history.location.pathname.startsWith(userPath)) {
@@ -126,7 +131,6 @@ export async function getInitialState(): Promise<{
     };
   }
   return {
-    fetchUserInfo,
     settings: defaultSettings,
   };
 }
@@ -143,12 +147,10 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     onPageChange: () => {
       const {location} = history;
       // 如果没有登录，重定向到 login
-      if (
-        !initialState?.currentUser &&
-        location.pathname !== loginPath &&
-        location.pathname !== homePath
-      ) {
-        history.push(loginPath);
+      if(!initialState?.currentUser) {
+        if(location.pathname.startsWith(adminPath) || location.pathname.startsWith(userPath)) {
+          history.push(loginPath);
+        }
       }
     },
     links: isDev

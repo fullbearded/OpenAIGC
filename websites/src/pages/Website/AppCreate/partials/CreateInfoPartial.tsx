@@ -9,8 +9,15 @@ import Picker from '@emoji-mart/react'
 
 const CreateInfoPartial: React.FC = () => {
   const [formData, setFormData] = useContext(FormDataContext);
+
+  const updateFormData = (key: string, value: any) => {
+    setFormData((prevFormData: any) => {
+      return { ...prevFormData, [key]: value };
+    });
+  };
+
   const handleFormChange = (key: string, value: any) => {
-    setFormData({...formData, [key]: value});
+    updateFormData(key, value);
   };
 
   const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
@@ -50,7 +57,7 @@ const CreateInfoPartial: React.FC = () => {
           fieldProps={{
             readOnly: true, // 禁止手动输入
             value: formData.icon,
-            onChange: (e) => handleFormChange('name', e.target.value),
+            onChange: (e) => handleFormChange('icon', e.target.value),
           }}
           initialValue={formData.icon}
         />

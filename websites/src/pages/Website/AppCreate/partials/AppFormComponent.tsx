@@ -17,7 +17,7 @@ let id: string | number | NodeJS.Timeout | null | undefined = null;
 
 const AppFormComponent: React.FC = () => {
 
-  const [formData] = useContext(FormDataContext);
+  const [formData, setFormData] = useContext(FormDataContext);
   const [loading, setLoading] = useState(false);
   const [artifacts, setArtifacts] = useState('');
   const [messages, setMessages] = useState({});
@@ -30,6 +30,7 @@ const AppFormComponent: React.FC = () => {
   };
 
   const stopRequest = () => {
+    setLoading(false)
     if (abortController) {
       abortController.abort();
       setAbortController(null)
@@ -58,6 +59,7 @@ const AppFormComponent: React.FC = () => {
       setLoading(true)
       setArtifacts('')
       setAbortController(ab);
+      // setFormData({abortController: ab})
 
       try {
         sse = fetchEventSource('/api/chat/stream/anonymous',
@@ -160,6 +162,7 @@ const AppFormComponent: React.FC = () => {
 
   const renderFormSelect = (item: any, index: any) => {
     console.log(item.props && item.props.default ? item.props.default : '')
+
     return (
       <Form.Item key={index} name={item.name} initialValue={item.props && item.props.default ? item.props.default : ''}>
         {
@@ -177,24 +180,26 @@ const AppFormComponent: React.FC = () => {
   }
 
   const renderFormText = (item: any, index: any) => {
+    console.log(item.props && item.props.default ? item.props.default : '')
+    console.log(item)
     return (
       <Form.Item key={index} name={item.name}
                  rules={[
                    {
                      validator: (_, value) => {
-                       const validateValue = value || item.props.default;
+                       const validateValue = value;
                        return validateValue && validateValue.trim() !== ""
                          ? Promise.resolve()
                          : Promise.reject(new Error("请输入你的提示词"));
                      },
                    },
-                 ]} initialValue={item.props.default}>
+                 ]}>
         {
           <TextArea className="form-textarea" placeholder={item.props.placeholder}
                     autoSize={{minRows: 6}}
                     showCount
                     maxLength={800}
-                    defaultValue={item.props.default}
+                    value={item.props.default}
           />
         }
       </Form.Item>
@@ -225,9 +230,11 @@ const AppFormComponent: React.FC = () => {
               renderFormText(item, index)
           ))}
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="form-button">
-              预览测试
-            </Button>
+            {
+              (<Button type="primary" htmlType="submit" className="form-button">
+                预览测试
+              </Button>)
+            }
           </Form.Item>
           <Form.Item className="response-item">
             <div

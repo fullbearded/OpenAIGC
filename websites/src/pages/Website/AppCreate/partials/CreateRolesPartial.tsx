@@ -48,20 +48,20 @@ const CreateRolePartial: React.FC = () => {
   };
   const messageOrderWarning = useMemo(() => {
     const roles = formData.roles;
-    const firstSystem = roles.find((v: { type: string; }) => v.type === 'system');
+    const firstSystem = roles?.find((v: { type: string; }) => v.type === 'system');
     if (firstSystem && firstSystem !== roles[0]) {
       return '通常，对话会以系统消息作为开头。';
     } else if (
-      roles.length > 1 &&
-      roles.some((role: { type: any; }, index: number, arr: { type: any; }[]) => arr[index - 1]?.type === role.type)
+      roles?.length > 1 &&
+      roles?.some((role: { type: any; }, index: number, arr: { type: any; }[]) => arr[index - 1]?.type === role.type)
     ) {
       return '通常，对话会在用户和助手之间交替进行。';
-    } else if (roles[roles.length - 1].type !== 'user') {
+    } else if (roles && roles[roles?.length - 1].type !== 'user') {
       return '通常，最后一条对话是用户发出的。';
     } else {
       return '';
     }
-  }, [formData.roles, formData.roles.length]);
+  }, [formData.roles, formData.roles?.length]);
 
   const insertRole = (index: number) => {
     const newRoles = [...formData.roles];
@@ -83,7 +83,7 @@ const CreateRolePartial: React.FC = () => {
   };
 
   const removeRole = (id: React.Key | null | undefined) => {
-    const newForms = formData.roles.filter((element: any, _: number) => element.id !== id);
+    const newForms = formData.roles?.filter((element: any, _: number) => element.id !== id);
     setFormData({...formData, roles: newForms});
   };
 
@@ -118,7 +118,7 @@ const CreateRolePartial: React.FC = () => {
       )
       }
       <ProForm submitter={false}>
-        {formData.roles.map((item: { id: React.Key | null | undefined; type: any; template: any;  index: any;}, index: number) => (
+        {formData.roles?.map((item: { id: React.Key | null | undefined; type: any; template: any;  index: any;}, index: number) => (
           <React.Fragment key={item.id}>
             <div className="item-wrapper">
               <div className="form-buttons">
@@ -137,7 +137,7 @@ const CreateRolePartial: React.FC = () => {
                   size="small"
                   icon={<MinusOutlined/>}
                   onClick={() => removeRole(item.id)}
-                  disabled={formData.roles.length === 1}
+                  disabled={formData.roles?.length === 1}
                   className="form-button"
                 >
                   删除

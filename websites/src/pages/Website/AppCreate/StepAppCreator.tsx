@@ -1,9 +1,5 @@
 import type {ProFormInstance} from '@ant-design/pro-components';
-import {
-  ProCard,
-  ProForm,
-  StepsForm,
-} from '@ant-design/pro-components';
+import {ProCard, ProForm, StepsForm,} from '@ant-design/pro-components';
 import {Button, Col, message, Row} from 'antd';
 import {useRef, useState} from 'react';
 import {useHistory} from 'react-router-dom';
@@ -56,11 +52,13 @@ const initialFormData: API.CreateAppData = {
     },
   ],
   author: '',
-  chat: false
+  chat: false,
+  abortController: null
 };
 
 export default () => {
   const formRef = useRef<ProFormInstance>();
+
   const [formData, setFormData] = useState(initialFormData);
   const history = useHistory();
 
@@ -110,7 +108,7 @@ export default () => {
                       }
                       const response = await checkFreeApp(body)
                       return response.status === 200;
-                      console.log(formData)
+                      // console.log(formData)
                     } catch (error) {
                       console.error('Error:', error);
                       return false;
@@ -164,6 +162,7 @@ export default () => {
                   }}
                   onFinish={async () => {
                     console.log(formRef.current?.getFieldsValue());
+
                     return false;
                   }}
                 >

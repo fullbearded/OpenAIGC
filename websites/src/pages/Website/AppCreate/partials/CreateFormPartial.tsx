@@ -58,7 +58,7 @@ const CreateFormPartial: React.FC = () => {
   };
 
   const [remainingChars, setRemainingChars] = useState<{ [key: string]: number }>(
-    formData.forms.reduce((acc: { [x: string]: number; }, cur: {
+    formData.forms?.reduce((acc: { [x: string]: number; }, cur: {
       name: any;
       id: string | number; }) => {
       const currentValueLength = cur.name.length;
@@ -68,10 +68,10 @@ const CreateFormPartial: React.FC = () => {
   );
 
   const [activeCollapseId, setActiveCollapseId] = useState<{ [id: string]: boolean }>({
-    [formData.forms[0].id]: false,
+    [formData.forms ? formData.forms[0].id : ""]: false,
   });
   const [collapseStatus, setCollapseStatus] = useState<{ [id: string]: boolean }>(
-    formData.forms.reduce((acc: { [x: string]: boolean; }, cur: { id: string | number; }) => {
+    formData.forms?.reduce((acc: { [x: string]: boolean; }, cur: { id: string | number; }) => {
       acc[cur.id] = true;
       return acc;
     }, {})
@@ -128,7 +128,7 @@ const CreateFormPartial: React.FC = () => {
   return (
     <div className="create-form-container">
       <ProForm submitter={false}>
-        {formData.forms.map((item: {
+        {formData.forms?.map((item: {
           label: any;
           type: any;
           name: any;
@@ -186,7 +186,7 @@ const CreateFormPartial: React.FC = () => {
                             size="small"
                             icon={<MinusOutlined/>}
                             onClick={() => removeForm(item.id)}
-                            disabled={formData.forms.length === 1}
+                            disabled={formData.forms?.length === 1}
                             className="form-button"
                           >
                             删除
