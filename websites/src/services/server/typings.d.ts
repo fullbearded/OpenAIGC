@@ -36,6 +36,7 @@ declare namespace API {
     chat: boolean;
     author: string;
     category: string;
+    temperature: number;
     abortController: any;
   }
 

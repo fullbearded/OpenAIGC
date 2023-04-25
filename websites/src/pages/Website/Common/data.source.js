@@ -14,19 +14,11 @@ export const Nav30DataSource = {
     className: 'header3-menu',
     children: [
       {
-        name: 'item1',
-        className: 'header3-item',
-        children: {
-          href: '#',
-          children: [{ children: <p>帮助中心</p>, name: 'text' }],
-        },
-      },
-      {
         name: 'item2',
         className: 'header3-item',
         children: {
           href: '#',
-          children: [{ children: <a href="/user/login">登录</a>, name: 'text' }],
+          children: [{ children: <a href="/login">登录</a>, name: 'text' }],
         },
       },
       {
@@ -34,7 +26,7 @@ export const Nav30DataSource = {
         className: 'header3-item',
         children: {
           href: '#',
-          children: [{ children: <p>免费试用</p>, name: 'text' }],
+          children: [{ children: <a href="/register">限时免费</a>, name: 'text' }],
         },
       },
     ],
@@ -76,10 +68,9 @@ export const Footer10DataSource = {
               children: Wechat,
             },
             {
-              href: '#',
               name: 'link0',
               children: <p>进 OpenAIGC 交流群加小助手</p>,
-              className: 'jzl0u1bko6-editor_css',
+              className: 'wechat-join',
             },
           ],
         },
@@ -92,7 +83,7 @@ export const Footer10DataSource = {
         title: { children: '帮助文档' },
         childWrapper: {
           children: [
-            { href: '#', name: 'link0', children: '常见问题' },
+            { name: 'link0', children: '常见问题' },
             { href: '#', name: 'link1', children: '' },
           ],
         },

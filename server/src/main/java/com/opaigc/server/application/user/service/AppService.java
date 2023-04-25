@@ -81,6 +81,8 @@ public interface AppService extends IService<App> {
 		@TableField(typeHandler = FastjsonTypeHandler.class)
 		private JSONArray roles;
 
+		private Double temperature;
+
 		private AccountSession session;
 	}
 

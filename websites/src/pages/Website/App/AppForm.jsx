@@ -26,6 +26,7 @@ class AppForm extends PureComponent {
     super(props);
     this.state = {
       loading: false,
+      submitLoading: false,
       artifacts: '',
       formData: {
         forms: [],
@@ -76,7 +77,7 @@ class AppForm extends PureComponent {
       };
 
       const abortController = new AbortController();
-      this.setState({loading: true, artifacts: '', abortController: abortController});
+      this.setState({submitLoading: true, loading: true, artifacts: '', abortController: abortController});
 
       try {
         sse = fetchEventSource('/api/v2/chat/stream/anonymous',
@@ -133,6 +134,7 @@ class AppForm extends PureComponent {
                 clearTimeout(id);
               }
               console.log("Connection closed by the server");
+              this.setState({submitLoading: false})
             },
             onerror: err => {
               console.log("There was an error from server", err);
@@ -229,7 +231,7 @@ class AppForm extends PureComponent {
     }));
 
   render() {
-    const {loading, formData, artifacts, copyIsSuccess, messages, isMobile} = this.state;
+    const {loading, formData, artifacts, copyIsSuccess, messages, isMobile, submitLoading} = this.state;
     return (
       <div className="container-wrapper">
         {isMobile ? (
@@ -250,7 +252,7 @@ class AppForm extends PureComponent {
                 this.renderFormText(item, index)
             ))}
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="form-button">
+              <Button type="primary" htmlType="submit" className="form-button" loading={submitLoading}>
                 提交
               </Button>
             </Form.Item>

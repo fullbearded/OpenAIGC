@@ -53,6 +53,7 @@ const initialFormData: API.CreateAppData = {
   ],
   author: '',
   chat: false,
+  temperature: 0.8,
   abortController: null
 };
 

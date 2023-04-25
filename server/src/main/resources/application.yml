@@ -90,3 +90,10 @@ app-config:
   apiKeys: ${API_KEYS:your api key}
   apiHost: ${API_HOST:https://api.openai.com}
   dailyLimit: ${DEFAULT_DAILY_LIMIT:10}
+  # 每天每个IP创建30个应用
+  anonymousCreateLimit: ${ANONYMOUS_CREATE_LIMIT:30}
+  # 每天每个IP创建100次应用预览
+  anonymousPreviewLimit: ${ANONYMOUS_PREVIEW_LIMIT:100}
+  # 每天每个IP创建100次应用查询
+  anonymousQueryLimit: ${ANONYMOUS_QUERY_LIMIT:100}
+

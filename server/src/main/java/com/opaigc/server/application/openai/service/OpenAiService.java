@@ -8,6 +8,7 @@ import com.opaigc.server.application.user.domain.UserChat;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ public interface OpenAiService extends CompletedCallBack {
 		private String remoteIp;
 		private UserChat.ChatCategoryEnum chatType;
 		private String appCode;
+		private Double temperature;
 	}
 
 	@Data
@@ -55,6 +57,9 @@ public interface OpenAiService extends CompletedCallBack {
 	class CompletionsAnonymousRequest {
 		@NotEmpty(message = "messages is required")
 		private List<Message> messages;
+
+		@NotNull(message = "temperature is required")
+		private Double temperature;
 	}
 
 	@Data

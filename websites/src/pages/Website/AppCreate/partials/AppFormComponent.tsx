@@ -1,4 +1,4 @@
-import {Button, Form, Input, message, Select, Spin} from 'antd';
+import {Button, Form, Input, message, Select, Spin, Slider} from 'antd';
 
 import {LoadingOutlined} from '@ant-design/icons';
 import React, {useContext, useState} from 'react';
@@ -17,8 +17,9 @@ let id: string | number | NodeJS.Timeout | null | undefined = null;
 
 const AppFormComponent: React.FC = () => {
 
-  const [formData, setFormData] = useContext(FormDataContext);
+  const [formData, setformData] = useContext(FormDataContext);
   const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [artifacts, setArtifacts] = useState('');
   const [messages, setMessages] = useState({});
   const [copyIsSuccess, setCopyIsSuccess] = useState(false);
@@ -31,6 +32,7 @@ const AppFormComponent: React.FC = () => {
 
   const stopRequest = () => {
     setLoading(false)
+    setSubmitLoading(false)
     if (abortController) {
       abortController.abort();
       setAbortController(null)
@@ -54,12 +56,13 @@ const AppFormComponent: React.FC = () => {
     if (values && Object.keys(values).length !== 0) {
       const payload = {
         messages: buildPayload(values),
+        temperature: formData.temperature,
       };
       const ab = new AbortController();
       setLoading(true)
+      setSubmitLoading(true)
       setArtifacts('')
       setAbortController(ab);
-      // setFormData({abortController: ab})
 
       try {
         sse = fetchEventSource('/api/chat/stream/anonymous',
@@ -84,6 +87,7 @@ const AppFormComponent: React.FC = () => {
                 console.log("Connection made ", response);
               } else {
                 if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+                  setSubmitLoading(false)
                   if (response.status === 403 || response.status === 401) {
                     message.error("网络错误，请重新再次");
                     ab.abort()
@@ -120,17 +124,20 @@ const AppFormComponent: React.FC = () => {
                 clearTimeout(id);
               }
               console.log("Connection closed by the server");
+              setSubmitLoading(false)
             },
             onerror: err => {
               console.log("There was an error from server", err);
               if (sse) {
                 stopRequest()
               }
+              setSubmitLoading(false)
             },
           },
         )
       } catch (error) {
         console.error(error);
+        setSubmitLoading(false)
       }
     }
   };
@@ -143,6 +150,10 @@ const AppFormComponent: React.FC = () => {
     setTimeout(() => {
       setCopyIsSuccess(false)
     }, 5000);
+  }
+
+  const onTemperatureChange = (value: any) => {
+    setformData({...formData, temperature: value})
   }
 
   const onSubmitCapture = (e: any) => {
@@ -193,19 +204,19 @@ const AppFormComponent: React.FC = () => {
                          : Promise.reject(new Error("请输入你的提示词"));
                      },
                    },
-                 ]}>
+                 ]}
+                 initialValue={item.props.default}
+      >
         {
           <TextArea className="form-textarea" placeholder={item.props.placeholder}
                     autoSize={{minRows: 6}}
                     showCount
                     maxLength={800}
-                    value={item.props.default}
           />
         }
       </Form.Item>
     )
   }
-
 
   return (
     <div className="container-wrapper">
@@ -229,9 +240,14 @@ const AppFormComponent: React.FC = () => {
               renderFormSelect(item, index) :
               renderFormText(item, index)
           ))}
+          <Form.Item label="随机应变值（值越低，结果越准确；值越高，结果越有创意）">
+            <Slider defaultValue={0.8} step={0.1} min={0.1} max={1.5}
+                    onChange={onTemperatureChange}
+            />
+          </Form.Item>
           <Form.Item>
             {
-              (<Button type="primary" htmlType="submit" className="form-button">
+              (<Button type="primary" htmlType="submit" className="form-button" loading={submitLoading}>
                 预览测试
               </Button>)
             }

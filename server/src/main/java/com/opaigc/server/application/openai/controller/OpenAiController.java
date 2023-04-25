@@ -1,6 +1,7 @@
 package com.opaigc.server.application.openai.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +19,7 @@ import com.opaigc.server.application.user.domain.UserChat;
 import com.opaigc.server.application.user.service.AppService;
 import com.opaigc.server.application.user.service.UserChatService;
 import com.opaigc.server.application.user.service.UserService;
+import com.opaigc.server.config.AppConfig;
 import com.opaigc.server.infrastructure.common.Constants;
 import com.opaigc.server.infrastructure.exception.AppException;
 import com.opaigc.server.infrastructure.http.ApiResponse;
@@ -36,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -66,19 +69,23 @@ public class OpenAiController {
 	@Autowired
 	private UserChatService userChatService;
 
-	private final IPLimiter limiter = new IPLimiter(20, 30 * 60 * 1000);
+	@Autowired
+	private AppConfig appConfig;
 
 	@Autowired
 	private AppService appService;
 
 	/**
 	 * Chat 流式返回
+	 * 给已有应用查询，已创建应用查询
+	 * @param req
 	 */
 	@PostMapping(value = "/v2/chat/stream/anonymous", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	@CrossOrigin(origins = "*")
 	public Flux<String> streamCompletionsV2Anonymous(@RequestBody OpenAiService.CompletionsV2AnonymousRequest req,
 																									 HttpServletRequest request) {
-		if (!limiter.isAllowed(request.getRemoteAddr())) {
+		IPLimiter queryLimit = new IPLimiter(appConfig.getAnonymousQueryLimit(),  24 * 60 * 60 * 1000);
+		if (!queryLimit.isAllowed(request.getRemoteAddr())) {
 			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
 		}
 		App app = appService.getByCode(req.getCode());
@@ -88,8 +95,72 @@ public class OpenAiController {
 
 		OpenAiService.ChatParameters parameters = OpenAiService.ChatParameters.builder().chatType(UserChat.ChatCategoryEnum.FREE)
 			.messages(buildMessages(app.getRoles(), req.getMessages())).remoteIp(request.getRemoteAddr()).type(MessageType.TEXT)
+			.temperature(app.getExt().getDouble("temperature"))
 			.sessionId(Constants.CHAT_WITH_ANONYMOUS_USER_KEY).build();
 		return openAiService.chatSend(parameters);
+	}
+
+	/**
+	 * 预览应用查询接口
+	 * @param req
+	 * @param request
+	 */
+	@PostMapping(value = "/chat/stream/anonymous", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
+	@CrossOrigin(origins = "*")
+	public Flux<String> streamCompletionsAnonymous(@RequestBody OpenAiService.CompletionsAnonymousRequest req, HttpServletRequest request) {
+		IPLimiter previewLimit = new IPLimiter(appConfig.getAnonymousPreviewLimit(),  24 * 60 * 60 * 1000);
+		if (!previewLimit.isAllowed(request.getRemoteAddr())) {
+			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
+		}
+
+		OpenAiService.ChatParameters parameters =
+			OpenAiService.ChatParameters.builder().chatType(UserChat.ChatCategoryEnum.FREE).messages(req.getMessages())
+				.temperature(req.getTemperature())
+				.remoteIp(request.getRemoteAddr()).type(MessageType.TEXT).sessionId(Constants.CHAT_WITH_ANONYMOUS_USER_KEY).build();
+		return openAiService.chatSend(parameters);
+	}
+
+	/**
+	 * 非匿名接口，需要用户登录，无查询的限制，但是会有费用的限制
+	 */
+	@PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
+	@CrossOrigin(origins = "*")
+	public Flux<String> streamCompletions(@RequestBody OpenAiService.CompletionsRequest req, HttpServletRequest request) {
+		String userCode = null;
+		String securityToken = req.getToken();
+		if (jwtTokenProvider.validateToken(securityToken)) {
+			userCode = jwtTokenProvider.getUserCode(securityToken);
+		}
+		UserChat.ChatCategoryEnum chatType = validateUserAndGetChatType(userCode);
+
+		OpenAiService.ChatParameters parameters =
+			OpenAiService.ChatParameters.builder().chatType(chatType).messages(req.getMessages()).remoteIp(request.getRemoteAddr())
+				.type(MessageType.TEXT).sessionId(userCode).build();
+		return openAiService.chatSend(parameters);
+	}
+
+	@PostMapping("/dashboard/billing/credit")
+	public ApiResponse creditGrants(@RequestBody CreditRequest req) {
+		return ApiResponse.success(openAiService.creditGrants(req.getKey()));
+	}
+
+	@PostMapping("/chat/moderation")
+	public ApiResponse moderation(@RequestBody @Valid ModerationRequest req) {
+		OpenAiService.ModerationData moderation = openAiService.moderation(req.getPrompt());
+		List<String> errors = new ArrayList<>();
+		for (Map.Entry<String, Boolean> entry : moderation.getResults().get(0).getCategories().entrySet()) {
+			String key = entry.getKey();
+			Boolean value = entry.getValue();
+			if (value) {
+				errors.add(messageSource.getMessage("openai.moderation." + key, null, Locale.getDefault()));
+			}
+		}
+		return ApiResponse.success(ModerationResponse.builder().errorMessages(errors).source(moderation).build());
+	}
+
+	@PostMapping("/chat/moderation/status")
+	public ApiResponse checkContent(@RequestBody @Validated ModerationRequest req) {
+		return ApiResponse.success(new JSONObject().fluentPut("status", openAiService.checkContent(req.getPrompt()).block()));
 	}
 
 	private List<OpenAiService.Message> buildMessages(JSONArray roles, JSONObject messages) {
@@ -110,41 +181,6 @@ public class OpenAiController {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Chat 流式返回
-	 */
-	@PostMapping(value = "/chat/stream/anonymous", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
-	@CrossOrigin(origins = "*")
-	public Flux<String> streamCompletionsAnonymous(@RequestBody OpenAiService.CompletionsAnonymousRequest req, HttpServletRequest request) {
-		if (!limiter.isAllowed(request.getRemoteAddr())) {
-			throw new AppException(CommonResponseCode.REMOTE_IP_MAX_LIMIT);
-		}
-
-		OpenAiService.ChatParameters parameters =
-			OpenAiService.ChatParameters.builder().chatType(UserChat.ChatCategoryEnum.FREE).messages(req.getMessages())
-				.remoteIp(request.getRemoteAddr()).type(MessageType.TEXT).sessionId(Constants.CHAT_WITH_ANONYMOUS_USER_KEY).build();
-		return openAiService.chatSend(parameters);
-	}
-
-	/**
-	 * Chat 流式返回
-	 */
-	@PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
-	@CrossOrigin(origins = "*")
-	public Flux<String> streamCompletions(@RequestBody OpenAiService.CompletionsRequest req, HttpServletRequest request) {
-		String userCode = null;
-		String securityToken = req.getToken();
-		if (jwtTokenProvider.validateToken(securityToken)) {
-			userCode = jwtTokenProvider.getUserCode(securityToken);
-		}
-		UserChat.ChatCategoryEnum chatType = validateUserAndGetChatType(userCode);
-
-		OpenAiService.ChatParameters parameters =
-			OpenAiService.ChatParameters.builder().chatType(chatType).messages(req.getMessages()).remoteIp(request.getRemoteAddr())
-				.type(MessageType.TEXT).sessionId(userCode).build();
-		return openAiService.chatSend(parameters);
 	}
 
 	private UserChat.ChatCategoryEnum validateUserAndGetChatType(String userCode) {
@@ -179,31 +215,6 @@ public class OpenAiController {
 			throw new AppException(CommonResponseCode.USER_DAILY_USAGE_LIMIT);
 		}
 	}
-
-	@PostMapping("/dashboard/billing/credit")
-	public ApiResponse creditGrants(@RequestBody CreditRequest req) {
-		return ApiResponse.success(openAiService.creditGrants(req.getKey()));
-	}
-
-	@PostMapping("/chat/moderation")
-	public ApiResponse moderation(@RequestBody @Valid ModerationRequest req) {
-		OpenAiService.ModerationData moderation = openAiService.moderation(req.getPrompt());
-		List<String> errors = new ArrayList<>();
-		for (Map.Entry<String, Boolean> entry : moderation.getResults().get(0).getCategories().entrySet()) {
-			String key = entry.getKey();
-			Boolean value = entry.getValue();
-			if (value) {
-				errors.add(messageSource.getMessage("openai.moderation." + key, null, Locale.getDefault()));
-			}
-		}
-		return ApiResponse.success(ModerationResponse.builder().errorMessages(errors).source(moderation).build());
-	}
-
-	@PostMapping("/chat/moderation/status")
-	public ApiResponse checkContent(@RequestBody @Validated ModerationRequest req) {
-		return ApiResponse.success(new JSONObject().fluentPut("status", openAiService.checkContent(req.getPrompt()).block()));
-	}
-
 
 	@Data
 	@NoArgsConstructor

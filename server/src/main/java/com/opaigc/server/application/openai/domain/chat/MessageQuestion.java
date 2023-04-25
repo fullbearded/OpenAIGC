@@ -29,15 +29,17 @@ public class MessageQuestion {
 	private List<OpenAiService.Message> messages;
 	private UserChat.ChatCategoryEnum chatType;
 	private Long appId;
+	private Double temperature;
 
 	public MessageQuestion(MessageType messageType, List<OpenAiService.Message> messages,
 												 String remoteIp, UserChat.ChatCategoryEnum chatType,
-												 Long appId) {
+												 Long appId, Double temperature) {
 		this.appId = Optional.ofNullable(appId).orElse(Constants.DEFAULT_APP_ID);
 		this.messageType = messageType;
 		this.messages = messages;
 		this.remoteIp = remoteIp;
 		this.chatType = chatType;
+		this.temperature = Optional.ofNullable(temperature).orElse(null);
 		this.date = new Date();
 	}
 }

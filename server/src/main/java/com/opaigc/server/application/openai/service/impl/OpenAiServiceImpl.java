@@ -48,7 +48,9 @@ public class OpenAiServiceImpl implements OpenAiService {
 
 		App app = appService.getByCode(parameters.getAppCode());
 		MessageQuestion userMessage = new MessageQuestion(MessageType.TEXT, parameters.getMessages(),
-			parameters.getRemoteIp(), parameters.getChatType(), Optional.ofNullable(app).map(App::getId).orElse(null));
+			parameters.getRemoteIp(), parameters.getChatType(), Optional.ofNullable(app).map(App::getId).orElse(null),
+			parameters.getTemperature()
+		);
 		return sendToOpenAi(parameters.getSessionId(), openAiClient, userMessage);
 	}
 
@@ -56,7 +58,8 @@ public class OpenAiServiceImpl implements OpenAiService {
 		return Flux.create(emitter -> {
 			OpenAISubscriber subscriber = new OpenAISubscriber(emitter, sessionId, this, userMessage);
 			Flux<String> openAiResponse =
-				openAiClient.getChatResponse(appConfig.getApiToken(), sessionId, userMessage.getMessages(), null, null, null);
+				openAiClient.getChatResponse(appConfig.getApiToken(), sessionId, userMessage.getMessages(),
+					null, userMessage.getTemperature(), null);
 			openAiResponse.subscribe(subscriber);
 			emitter.onDispose(subscriber);
 		});

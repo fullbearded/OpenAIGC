@@ -1,12 +1,14 @@
 package com.opaigc.server.application.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.opaigc.server.application.user.domain.App;
 import com.opaigc.server.application.user.service.AppService;
+import com.opaigc.server.config.AppConfig;
 import com.opaigc.server.infrastructure.auth.AccountSession;
 import com.opaigc.server.infrastructure.common.Constants;
 import com.opaigc.server.infrastructure.exception.AppException;
@@ -37,7 +39,8 @@ public class AnonymousController {
 	@Autowired
 	private AppService appService;
 
-	private final IPLimiter limiter = new IPLimiter(2, 30 * 60 * 1000);
+	@Autowired
+	private AppConfig appConfig;
 
 	/**
 	 * 获取公共APP列表
@@ -80,6 +83,7 @@ public class AnonymousController {
 	 **/
 	@PostMapping("/app/create/anonymous")
 	public ApiResponse anonymousCreate(@RequestBody AppService.AppCreateParam req, HttpServletRequest request) {
+		IPLimiter limiter = new IPLimiter(appConfig.getAnonymousCreateLimit(), 24 * 60 * 60 * 1000);
 		if (!limiter.isAllowed(request.getRemoteAddr())) {
 			throw new AppException(CommonResponseCode.APP_WITH_ANONYMOUS_MAX_LIMIT);
 		}

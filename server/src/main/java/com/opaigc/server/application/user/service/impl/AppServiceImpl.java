@@ -3,6 +3,7 @@ package com.opaigc.server.application.user.service.impl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,7 +21,6 @@ import com.opaigc.server.infrastructure.utils.PageUtil;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -106,23 +106,24 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
 	@Override
 	public App create(AppCreateParam req) {
 		lambdaQuery().eq(App::getName, req.getName()).eq(App::getStatus, App.StatusEnum.ENABLED).isNull(App::getDeletedAt).oneOpt()
-			.ifPresent(app -> {
-				throw new AppException(CommonResponseCode.APP_NAME_EXIST);
-			});
+				.ifPresent(app -> {
+					throw new AppException(CommonResponseCode.APP_NAME_EXIST);
+				});
 
 		App app = App.builder()
-			.category(req.getCategory())
-			.code(CodeUtil.generateRandomUserCode())
-			.name(req.getName())
-			.description(req.getDescription())
-			.icon(req.getIcon())
-			.status(App.StatusEnum.ENABLED)
-			.forms(req.getForms())
-			.roles(req.getRoles())
-			.createdBy(req.getSession().getUsername())
-			.updatedBy(req.getSession().getUsername())
-			.userId(req.getSession().getId())
-			.build();
+				.category(req.getCategory())
+				.code(CodeUtil.generateRandomUserCode())
+				.name(req.getName())
+				.description(req.getDescription())
+				.icon(req.getIcon())
+				.status(App.StatusEnum.ENABLED)
+				.forms(req.getForms())
+				.roles(req.getRoles())
+				.ext(new JSONObject().fluentPut("temperature", req.getTemperature()))
+				.createdBy(req.getSession().getUsername())
+				.updatedBy(req.getSession().getUsername())
+				.userId(req.getSession().getId())
+				.build();
 		save(app);
 		return app;
 	}

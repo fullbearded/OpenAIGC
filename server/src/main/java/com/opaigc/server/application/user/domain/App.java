@@ -88,6 +88,11 @@ public class App {
 	 **/
 	private StatusEnum status;
 	/**
+	 * APP扩展信息
+	 */
+	@TableField(typeHandler = FastjsonTypeHandler.class)
+	private JSONObject ext;
+	/**
 	 * 删除时间
 	 */
 	private LocalDateTime deletedAt;
