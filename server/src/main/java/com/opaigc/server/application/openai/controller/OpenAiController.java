@@ -95,7 +95,7 @@ public class OpenAiController {
 
 		OpenAiService.ChatParameters parameters = OpenAiService.ChatParameters.builder().chatType(UserChat.ChatCategoryEnum.FREE)
 			.messages(buildMessages(app.getRoles(), req.getMessages())).remoteIp(request.getRemoteAddr()).type(MessageType.TEXT)
-			.temperature(app.getExt().getDouble("temperature"))
+			.temperature(Optional.ofNullable(app.getExt()).map(f -> f.getDouble("temperature")).orElse(null))
 			.sessionId(Constants.CHAT_WITH_ANONYMOUS_USER_KEY).build();
 		return openAiService.chatSend(parameters);
 	}
