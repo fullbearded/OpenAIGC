@@ -57,11 +57,12 @@ const Login: React.FC = () => {
       setToken(msg.data.token);
 
       await fetchUserInfo();
+
       /** 此方法会跳转到 redirect 参数所在的位置 */
       if (!history) return;
       const {query} = history.location;
       const {redirect} = query as { redirect: string };
-      history.push(redirect || '/user/apps');
+      history.push(redirect || '/user');
       return;
     }
     console.log(msg);

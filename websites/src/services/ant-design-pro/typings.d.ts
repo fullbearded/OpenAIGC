@@ -16,7 +16,8 @@ declare namespace API {
     userType?: string;
     usedQuota?: number;
     expireDate?: string;
-    access?: string;
+    organizationId?: number,
+    organizationName?: string,
   };
 
   type LoginResult = {

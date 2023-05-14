@@ -41,7 +41,7 @@ declare namespace API {
   }
 
 
-  type CreateFreeAppResponse = {
+  type CommonApiResponse = {
     "status": number,
     "code": string,
     "message": string,

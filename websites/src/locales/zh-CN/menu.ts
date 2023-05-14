@@ -50,4 +50,11 @@ export default {
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
   'menu.apps': '应用中心',
+  'menu.user': '用户中心',
+  'menu.user.user-home': '我的应用',
+  'menu.user.apps': '应用',
+  'menu.manager': '管理员',
+  'menu.manager.manager-home': '概况',
+  'menu.manager.manager-users': '用户管理',
+  'menu.manager.manager-chat': '会话管理',
 };

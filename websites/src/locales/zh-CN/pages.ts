@@ -1,5 +1,5 @@
 export default {
-  'pages.layouts.userLayout.title': 'OpenAIGC 是开源社区 ChatGPT 应用最为广泛的应用',
+  'pages.layouts.userLayout.title': 'OpenAIGC ChatGPT 应用最为广泛的应用',
   'pages.login.accountLogin.tab': '账户密码登录',
   'pages.login.accountLogin.errorMessage': '错误的用户名和密码',
   'pages.login.failure': '登录失败，请重试！',

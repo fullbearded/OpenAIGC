@@ -27,6 +27,20 @@ export const initialStateConfig = {
 const errorHandler = async (error: ResponseError) => {
   const {response} = error;
   if (response && response.status) {
+    if(response.status === 400) {
+      if (response && response.body) {
+        try {
+          const errorData = await response.clone().json(); // 或者使用 .text()
+          const errorMessage = errorData.message || '参数错误';
+          message.error(errorMessage);
+        } catch (e) {
+          message.error('参数错误，请检查入参');
+        }
+      } else {
+        message.error('参数错误，请检查入参');
+      }
+    }
+
     if (response.status === 422) {
       if (response && response.body) {
         try {
@@ -78,7 +92,7 @@ const authHeaderInterceptor = (url: string, options: any) => {
   }
 
   const token = getToken()
-  const authHeader = { Authorization: 'Bearer ' + token };
+  const authHeader = { Authorization: 'Bearer ' + token, 'Content-Type': "application/json;charset=UTF-8"};
   return {
     url: `${url}`,
     options: { ...options, interceptors: true, headers: authHeader },
@@ -119,7 +133,6 @@ export async function getInitialState(): Promise<{
     };
   }
 
-
   // 如果需要权限验证
   if (history.location.pathname.startsWith(adminPath) ||
     history.location.pathname.startsWith(userPath)) {
@@ -131,6 +144,7 @@ export async function getInitialState(): Promise<{
     };
   }
   return {
+    fetchUserInfo,
     settings: defaultSettings,
   };
 }
@@ -157,11 +171,11 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
       ? [
         <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
           <LinkOutlined/>
-          <span>OpenAPI 文档</span>
+          <span>[开发者]OpenAPI 文档</span>
         </Link>,
         <Link to="/~docs" key="docs">
           <BookOutlined/>
-          <span>业务组件文档</span>
+          <span>[开发者]业务组件文档</span>
         </Link>,
       ]
       : [],
