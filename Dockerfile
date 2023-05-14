@@ -15,22 +15,11 @@ COPY websites /app
 
 RUN yarn build:prod
 
-# build backend
-FROM maven:3.8.3-openjdk-17 as backend
-
-WORKDIR /app
-
-COPY /server /app
-
-RUN mvn clean package -DskipTests=true
-
-
 # service
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY --from=backend /app/target/server-0.0.1-SNAPSHOT.jar /app
 COPY --from=frontend /app/dist /app/public
 
 # 安装 nginx
@@ -42,4 +31,4 @@ COPY ./docker-compose/nginx.conf /etc/nginx
 
 EXPOSE 80
 
-CMD service nginx start && java -jar server-0.0.1-SNAPSHOT.jar
+CMD service nginx start

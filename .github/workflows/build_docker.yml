@@ -3,6 +3,8 @@ name: build_docker
 on:
   release:
     types: [ created ] # 表示在创建新的 Release 时触发
+  push:
+    branches: [ main ] # 表示在 main 分支上 push 时触发
 
 # 写一个workflow，用于构建docker镜像，runner名为server-ci,tag是self-hosted,os是ubuntu-20.04,并基于Dockerfile进行打包
 jobs:
@@ -13,7 +15,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
       - name: Get release version
-        run: echo "::set-output name=version::$(echo $GITHUB_REF | sed 's/refs\/tags\///')"
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            echo "::set-output name=version::$(echo $GITHUB_REF | sed 's/refs\/tags\///')"
+          else
+            echo "::set-output name=version::$(head /dev/urandom | LC_ALL=C tr -dc A-Za-z0-9 | head -c 10)"
+          fi
         id: get_version
 
       - name: Build Docker image
