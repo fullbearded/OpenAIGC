@@ -32,4 +32,11 @@ export default {
       pathRewrite: { '^': '' },
     },
   },
+  production: {
+    '/api/': {
+      target: 'https://api.opaigc.com/',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
+  }
 };
