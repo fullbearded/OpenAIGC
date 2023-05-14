@@ -5,6 +5,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {listUsers, userChatPage} from "@/services/user/api";
 import type {ColumnsType} from 'antd/es/table';
 import moment from "moment";
+import md from "@/components/markdown-it"
 
 interface DataType {
   id: number;
@@ -21,13 +22,22 @@ const UsersPage: React.FC = () => {
   // @ts-ignore
   const {currentUser} = initialState;
   const [userChats, setUserChats] = useState({});
+  const [totalUserChats, setTotalUserChats] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setLoading] = useState(false);
+
 
   useEffect(() => {
-    userChatPage({}).then((res) => {
-      setUserChats(res.data)
-      console.log(res.data)
-    });
-  }, {});
+    setLoading(true);
+    userChatPage({ page: currentPage })
+      .then(response => {
+        setUserChats(response.data);
+        setTotalUserChats(response.total);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [currentPage]);
 
   const columns: ColumnsType<DataType> = [
     {
@@ -49,22 +59,18 @@ const UsersPage: React.FC = () => {
       title: '提问',
       dataIndex: 'questions',
       key: 'questions',
-      width: '30%',
+      width: '20%',
       render: (_, record) => (
-        <>
-          {record.questions?.messages[record.questions?.messages.length -1].content}
-        </>
+        <div dangerouslySetInnerHTML={{__html: md.render(record.questions?.messages[record.questions?.messages.length -1].content)}}/>
       ),
     },
     {
       title: '回答',
       dataIndex: 'answers',
       key: 'answers',
-      width: '30%',
+      width: '20%',
       render: (_, record) => (
-        <>
-          {record.answers.answer}
-        </>
+        <div dangerouslySetInnerHTML={{__html: md.render(record.answers.answer)}}/>
       ),
     },
     {
@@ -78,6 +84,9 @@ const UsersPage: React.FC = () => {
       )
     }
   ];
+  const handlePaginationChange = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <PageHeaderWrapper
@@ -95,7 +104,17 @@ const UsersPage: React.FC = () => {
           }}
         />
       </Card>
-      <Table columns={columns} dataSource={userChats.content}/>
+      <Table
+        columns={columns}
+             dataSource={userChats.content}
+             pagination={{
+               defaultCurrent: currentPage,
+               defaultPageSize: userChats.perPage,
+               total: userChats.total,
+               showSizeChanger: true,
+               pageSizeOptions: ['20']}}
+             onChange={({ current }) => handlePaginationChange(current)}
+      />
     </PageHeaderWrapper>
   );
 };

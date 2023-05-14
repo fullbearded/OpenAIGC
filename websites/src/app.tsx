@@ -66,6 +66,7 @@ const errorHandler = async (error: ResponseError) => {
     }
     if (response.status === 403) {
       message.error('没有权限，请联系管理员');
+      history.push(loginPath);
     }
     if (response.status === 404) {
       message.error('请求资源不存在');

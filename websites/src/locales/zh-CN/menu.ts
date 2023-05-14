@@ -57,4 +57,5 @@ export default {
   'menu.manager.manager-home': '概况',
   'menu.manager.manager-users': '用户管理',
   'menu.manager.manager-chat': '会话管理',
+  'menu.home.home': '网站主页',
 };
